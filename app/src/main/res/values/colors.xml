@@ -20,7 +20,9 @@
     <color name="white">#FFFFFF</color>
 
     <color name="primary1">#E12929</color>
-    <color name="background">#4b4848</color>
+    <color name="background">#383636</color>
+    <color name="background2">#4b4848</color>
+    <color name="background3">#302e2e</color>
 
     <color name="edittext_background">#464444</color>
     <color name="button_start_background">#ac3535</color>

@@ -28,7 +28,8 @@
                 android:background="@drawable/edit_text_shape"
                 android:layout_marginTop="10dp"
                 android:inputType="textCapWords"
-                android:hint="Name" />
+                android:hint="@string/full_name"
+                android:paddingLeft="20dp" />
 
             <EditText android:id="@+id/input_email_signup"
                 android:layout_width="match_parent"
@@ -36,6 +37,7 @@
                 android:background="@drawable/edit_text_shape"
                 android:layout_marginTop="10dp"
                 android:inputType="textEmailAddress"
+                android:paddingLeft="20dp"
                 android:hint="@string/hint_email" />
 
             <EditText android:id="@+id/input_password_signup"
@@ -44,6 +46,7 @@
                 android:background="@drawable/edit_text_shape"
                 android:layout_marginTop="10dp"
                 android:inputType="textPassword"
+                android:paddingLeft="20dp"
                 android:hint="@string/hint_password"/>
 
             <Button

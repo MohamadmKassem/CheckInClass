@@ -28,6 +28,7 @@
             android:inputType="textEmailAddress"
             android:background="@drawable/edit_text_shape"
             android:layout_marginTop="10dp"
+            android:paddingLeft="20dp"
             android:hint="@string/hint_email" />
 
         <EditText android:id="@+id/input_password_login"
@@ -36,6 +37,7 @@
             android:inputType="textPassword"
             android:background="@drawable/edit_text_shape"
             android:layout_marginTop="10dp"
+            android:paddingLeft="20dp"
             android:hint="@string/hint_password"/>
 
         <Button

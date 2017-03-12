@@ -15,7 +15,8 @@ public class LoginActivity extends AppCompatActivity {
     EditText passwordText;
     Button loginButton;
     TextView signupLink;
-
+    String result;
+    ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,7 +30,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public void login(View view) {
         if (!validate()) {
-            onLoginFailed();
+            onLoginFailed("Login failed");
             return;
         }
 
@@ -44,16 +45,24 @@ public class LoginActivity extends AppCompatActivity {
         String password = passwordText.getText().toString();
 
         // TODO: Implement your own authentication logic here.
-
+        result="";
+        LoginThread LT=new LoginThread(this);
+        LT.execute(email,password);
         new android.os.Handler().postDelayed(
                 new Runnable() {
-                    public void run() {
+                    public void run()
+                    {
                         // On complete call either onLoginSuccess or onLoginFailed
-                        onLoginSuccess();
-                        // onLoginFailed();
-                        progressDialog.dismiss();
+                         if(result=="LoginSuccess")
+                             onLoginSuccess();
+                         else
+                            if(result=="")
+                                onLoginFailed("no connection");
+                            else
+                                onLoginFailed(result);
+                         progressDialog.dismiss();
                     }
-                }, 3000);
+                }, 5000);
 
     }
 
@@ -82,8 +91,8 @@ public class LoginActivity extends AppCompatActivity {
         //finish();
     }
 
-    public void onLoginFailed() {
-        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
+    public void onLoginFailed(String result) {
+        Toast.makeText(getBaseContext(), result, Toast.LENGTH_LONG).show();
 
         loginButton.setEnabled(true);
     }

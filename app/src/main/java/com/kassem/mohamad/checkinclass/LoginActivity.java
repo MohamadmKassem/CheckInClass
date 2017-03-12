@@ -1,6 +1,7 @@
 package com.kassem.mohamad.checkinclass;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -10,6 +11,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class LoginActivity extends AppCompatActivity {
+
+    private static final int REQUEST_SIGNUP = 0;
 
     EditText emailText;
     EditText passwordText;
@@ -22,8 +25,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        emailText = (EditText) findViewById(R.id.input_email);
-        passwordText = (EditText) findViewById(R.id.input_password);
+        emailText = (EditText) findViewById(R.id.input_email_login);
+        passwordText = (EditText) findViewById(R.id.input_password_login);
         loginButton = (Button) findViewById(R.id.btn_login);
         signupLink = (TextView) findViewById(R.id.link_signup);
     }
@@ -38,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
 
         final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this, R.style.AppTheme_Dark_Dialog);
         progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("Authenticating2...");
+        progressDialog.setMessage("Authenticating...");
         progressDialog.show();
 
         String email = emailText.getText().toString();
@@ -66,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    /*
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_SIGNUP) {
@@ -78,7 +81,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
     }
-    */
+
 
     @Override
     public void onBackPressed() {
@@ -88,7 +91,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onLoginSuccess() {
         loginButton.setEnabled(true);
-        //finish();
+        finish();
     }
 
     public void onLoginFailed(String result) {
@@ -120,9 +123,11 @@ public class LoginActivity extends AppCompatActivity {
         return valid;
     }
 
-    public void sigbup(View view) {
+
+    public void linkSignup(View view) {
         // Start the Signup activity
-        //Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
-        //startActivityForResult(intent, REQUEST_SIGNUP);
+        Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
+        startActivityForResult(intent, REQUEST_SIGNUP);
     }
+
 }

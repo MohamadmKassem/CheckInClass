@@ -21,9 +21,16 @@ public class SignupActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
+
+        nameText = (EditText) findViewById(R.id.input_name_signup);
+        emailText = (EditText) findViewById(R.id.input_email_signup);
+        passwordText = (EditText) findViewById(R.id.input_password_signup);
+        signupButton = (Button) findViewById(R.id.btn_signup);
+        loginLink = (TextView) findViewById(R.id.link_login);
     }
 
-    public void sigbup(View view) {
+    public void signup(View view) {
+
         if (!validate()) {
             onSignupFailed();
             return;
@@ -70,6 +77,7 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     public boolean validate() {
+
         boolean valid = true;
 
         String name = nameText.getText().toString();
@@ -98,5 +106,10 @@ public class SignupActivity extends AppCompatActivity {
         }
 
         return valid;
+    }
+
+    public void linkLogin(View view) {
+        // Finish the registration screen and return to the Login activity
+        finish();
     }
 }

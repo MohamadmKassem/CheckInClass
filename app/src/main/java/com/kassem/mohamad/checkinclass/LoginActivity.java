@@ -56,11 +56,11 @@ public class LoginActivity extends AppCompatActivity {
                     public void run()
                     {
                         // On complete call either onLoginSuccess or onLoginFailed
-                         if(result=="LoginSuccess")
+                         if(result.equals("LoginSuccess"))
                              onLoginSuccess();
                          else
-                            if(result=="")
-                                onLoginFailed("no connection");
+                            if(result.equals(""))
+                                onLoginFailed("No connection");
                             else
                                 onLoginFailed(result);
                          progressDialog.dismiss();

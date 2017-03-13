@@ -33,7 +33,7 @@ public class SignupActivity extends AppCompatActivity {
     public void signup(View view) {
 
         if (!validate()) {
-            onSignupFailed("invalid information");
+            onSignupFailed("Invalid Information");
             return;
         }
 
@@ -50,18 +50,23 @@ public class SignupActivity extends AppCompatActivity {
         String password = passwordText.getText().toString();
 
         // TODO: Implement your own signup logic here.
-        result="";
-        SignUpThread th=new SignUpThread(this);
-        th.execute(email,password,name);
+        result = "";
+        SignUpThread th = new SignUpThread(this);
+        th.execute(email, password, name);
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
                         // On complete call either onSignupSuccess or onSignupFailed
                         // depending on success
-                        if(result=="SignUpSuccess")
+                        if(result.equals("SignUpSuccess")) {
                             onSignupSuccess();
-                        else if(result=="")onSignupFailed("no connection");
-                        else onSignupFailed(result);
+                        }
+                        else if(result.equals("")){
+                            onSignupFailed("No connection");
+                        }
+                        else
+                            onSignupFailed(result);
+
                         progressDialog.dismiss();
                     }
                 }, 4000);
@@ -90,21 +95,21 @@ public class SignupActivity extends AppCompatActivity {
         String password = passwordText.getText().toString();
 
         if (name.isEmpty() || name.length() < 3) {
-            nameText.setError("at least 3 characters");
+            nameText.setError("At least 3 characters");
             valid = false;
         } else {
             nameText.setError(null);
         }
 
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            emailText.setError("enter a valid email address");
+            emailText.setError("Enter a valid email address");
             valid = false;
         } else {
             emailText.setError(null);
         }
 
         if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
-            passwordText.setError("between 4 and 10 alphanumeric characters");
+            passwordText.setError("Between 4 and 10 alphanumeric characters");
             valid = false;
         } else {
             passwordText.setError(null);

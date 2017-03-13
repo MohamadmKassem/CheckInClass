@@ -14,11 +14,13 @@ import java.util.Scanner;
 
 
 class SignUpThread extends AsyncTask<String, Void, String> {
+
     SignupActivity m;
-    SignUpThread(SignupActivity m)
-    {
-        this.m=m;
+
+    public SignUpThread(SignupActivity m) {
+        this.m = m;
     }
+
     protected String doInBackground(String...params) {
         PrintWriter out;
         Scanner in;
@@ -26,7 +28,7 @@ class SignUpThread extends AsyncTask<String, Void, String> {
         try {
             //s = new Socket("192.168.43.157",8082);
             s=new Socket();
-            s.connect(new InetSocketAddress("192.168.43.157",8082),3000);
+            s.connect(new InetSocketAddress("192.168.43.243",8082),3000);
             in =new Scanner(s.getInputStream());
             out = new PrintWriter(s.getOutputStream(),true);
             out.println("signUp--#--"+params[0]+"--#--"+params[1]+"--#--"+params[2]);
@@ -48,6 +50,7 @@ class SignUpThread extends AsyncTask<String, Void, String> {
     }
     protected void onPostExecute(String r) {
         super.onPostExecute(r);
-        if(r!="")m.result=r;
+        if(r != "")
+            m.result=r;
     }
 }

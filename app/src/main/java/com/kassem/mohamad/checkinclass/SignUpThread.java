@@ -27,7 +27,7 @@ class SignUpThread extends AsyncTask<String, Void, String> {
         Socket s;
         try {
             //s = new Socket("192.168.43.157",8082);
-            s=new Socket();
+            s = new Socket();
             s.connect(new InetSocketAddress("192.168.43.243",8082),3000);
             in =new Scanner(s.getInputStream());
             out = new PrintWriter(s.getOutputStream(),true);

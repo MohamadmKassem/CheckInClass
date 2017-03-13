@@ -16,6 +16,7 @@ public class SignupActivity extends AppCompatActivity {
     EditText passwordText;
     Button signupButton;
     TextView loginLink;
+    String result;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +33,7 @@ public class SignupActivity extends AppCompatActivity {
     public void signup(View view) {
 
         if (!validate()) {
-            onSignupFailed();
+            onSignupFailed("invalid information");
             return;
         }
 
@@ -49,17 +50,21 @@ public class SignupActivity extends AppCompatActivity {
         String password = passwordText.getText().toString();
 
         // TODO: Implement your own signup logic here.
-
+        result="";
+        SignUpThread th=new SignUpThread(this);
+        th.execute(email,password,name);
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
                         // On complete call either onSignupSuccess or onSignupFailed
                         // depending on success
-                        onSignupSuccess();
-                        // onSignupFailed();
+                        if(result=="SignUpSuccess")
+                            onSignupSuccess();
+                        else if(result=="")onSignupFailed("no connection");
+                        else onSignupFailed(result);
                         progressDialog.dismiss();
                     }
-                }, 3000);
+                }, 4000);
 
     }
 
@@ -70,8 +75,8 @@ public class SignupActivity extends AppCompatActivity {
         finish();
     }
 
-    public void onSignupFailed() {
-        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
+    public void onSignupFailed(String r) {
+        Toast.makeText(getBaseContext(), r, Toast.LENGTH_LONG).show();
 
         signupButton.setEnabled(true);
     }

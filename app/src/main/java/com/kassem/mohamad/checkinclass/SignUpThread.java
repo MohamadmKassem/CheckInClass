@@ -13,9 +13,9 @@ import java.net.*;
 import java.util.Scanner;
 
 
-class LoginThread extends AsyncTask<String, Void, String> {
-    LoginActivity m;
-    LoginThread(LoginActivity m)
+class SignUpThread extends AsyncTask<String, Void, String> {
+    SignupActivity m;
+    SignUpThread(SignupActivity m)
     {
         this.m=m;
     }
@@ -26,10 +26,10 @@ class LoginThread extends AsyncTask<String, Void, String> {
         try {
             //s = new Socket("192.168.43.157",8082);
             s=new Socket();
-            s.connect(new InetSocketAddress("192.168.43.157",8082),4000);
+            s.connect(new InetSocketAddress("192.168.43.157",8082),3000);
             in =new Scanner(s.getInputStream());
             out = new PrintWriter(s.getOutputStream(),true);
-            out.println("login--#--"+params[0]+"--#--"+params[1]);
+            out.println("signUp--#--"+params[0]+"--#--"+params[1]+"--#--"+params[2]);
             String r=in.nextLine();
             //DatagramSocket D = new DatagramSocket();
             //byte[] b ="hello".getBytes();

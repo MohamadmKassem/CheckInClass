@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
             if(!file.exists()){
                 System.out.println("main1");
                 Intent intent = new Intent(this, LoginActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent,request_code);
             }
             else {
                 FileInputStream inputStream = openFileInput("login");
@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if(s.equals("")){
                     Intent intent = new Intent(this, LoginActivity.class);
-                    startActivity(intent);
+                    startActivityForResult(intent,request_code);
                 }
             }
         }
@@ -181,6 +181,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == request_code) {
+            if (resultCode == RESULT_OK) {
 
+                // TODO: Implement successful signup logic here
+                // By default we just finish the Activity and log them in automatically
+                this.finish();
+            }
+        }
+    }
 
 }

@@ -1,6 +1,7 @@
 package com.kassem.mohamad.checkinclass;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -8,6 +9,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.FileOutputStream;
 
 public class SignupActivity extends AppCompatActivity {
 
@@ -17,6 +20,7 @@ public class SignupActivity extends AppCompatActivity {
     Button signupButton;
     TextView loginLink;
     String result;
+    private  String mailAddress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +53,8 @@ public class SignupActivity extends AppCompatActivity {
         String email = emailText.getText().toString();
         String password = passwordText.getText().toString();
 
+        mailAddress = email;
+
         // TODO: Implement your own signup logic here.
         result = "";
         SignUpThread th = new SignUpThread(this);
@@ -76,6 +82,16 @@ public class SignupActivity extends AppCompatActivity {
 
     public void onSignupSuccess() {
         signupButton.setEnabled(true);
+        String loginfile = "login";
+        FileOutputStream outputStream;
+        try{
+            outputStream = openFileOutput(loginfile, Context.MODE_PRIVATE);
+            outputStream.write(mailAddress.getBytes());
+            outputStream.close();
+        }
+        catch (Exception ex){
+
+        }
         setResult(RESULT_OK, null);
         finish();
     }

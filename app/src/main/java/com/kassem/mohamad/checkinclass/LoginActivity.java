@@ -1,7 +1,9 @@
 package com.kassem.mohamad.checkinclass;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -9,6 +11,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.FileOutputStream;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -19,6 +23,7 @@ public class LoginActivity extends AppCompatActivity {
     Button loginButton;
     TextView signupLink;
     String result;
+    private String mailAddress;
     ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +50,7 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog.show();
 
         String email = emailText.getText().toString();
+        mailAddress = email;
         String password = passwordText.getText().toString();
 
         // TODO: Implement your own authentication logic here.
@@ -86,11 +92,23 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         // disable going back to the MainActivity
+        Toast.makeText(getApplicationContext(),"back",Toast.LENGTH_LONG).show();
         moveTaskToBack(true);
     }
 
     public void onLoginSuccess() {
         loginButton.setEnabled(true);
+        // save email to login file
+        String loginfile = "login";
+        FileOutputStream outputStream;
+        try{
+            outputStream = openFileOutput(loginfile, Context.MODE_PRIVATE);
+            outputStream.write(mailAddress.getBytes());
+            outputStream.close();
+        }
+        catch (Exception ex){
+
+        }
         finish();
     }
 

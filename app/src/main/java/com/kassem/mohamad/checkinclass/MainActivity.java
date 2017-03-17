@@ -1,6 +1,8 @@
 package com.kassem.mohamad.checkinclass;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -21,6 +23,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 public class MainActivity extends AppCompatActivity {
 
     /**
@@ -38,10 +45,15 @@ public class MainActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
 
+    public static int request_code = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        System.out.println("create");
+        Toast.makeText(getApplicationContext(),"create",Toast.LENGTH_LONG).show();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -65,8 +77,32 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
+        System.out.println("main0");
+        // check if already login
+        String s = "";
+        try{
+            File file = new File("login");
+            if(!file.exists()){
+                System.out.println("main1");
+                Intent intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
+            }
+            else {
+                FileInputStream inputStream = openFileInput("login");
+                System.out.println("main2");
+                int i;
+                while((i=inputStream.read()) != -1){
+                    s += String.valueOf((char)i);
+                }
+                if(s.equals("")){
+                    Intent intent = new Intent(this, LoginActivity.class);
+                    startActivity(intent);
+                }
+            }
+        }
+        catch (Exception ex){
+            System.out.println("main3");
+        }
 
     }
 
@@ -144,4 +180,7 @@ public class MainActivity extends AppCompatActivity {
             return null;
         }
     }
+
+
+
 }

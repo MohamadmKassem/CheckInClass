@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -88,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
 
                 if(tabLayout.getSelectedTabPosition() == 0){
-                    Toast.makeText(getApplicationContext(),"student",Toast.LENGTH_LONG).show();
                     addClass();
                 }
                 else if(tabLayout.getSelectedTabPosition() == 1){
@@ -251,6 +251,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // search for the new class
+                if(validateId(editText)){
+                    editText.setError("Invalide Id");
+                    return;
+                }
+                editText.setError(null);
                 final ProgressDialog progressDialog = new ProgressDialog(MainActivity.this, R.style.AppTheme_Dark_Dialog);
                 progressDialog.setIndeterminate(true);
                 progressDialog.setMessage("Search a class ...");
@@ -264,6 +269,8 @@ public class MainActivity extends AppCompatActivity {
                             public void run()
                             {
                                 editText.setText(result);
+                                onClassExist();
+                                //onClassNotexist();
                                 progressDialog.dismiss();
                             }
                         }, 5000);
@@ -286,6 +293,51 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClassExist(){
+        final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.search_class_linear_layout);
+        linearLayout.removeAllViews();
 
+        LinearLayout linearLayout1 = new LinearLayout(this);
+        linearLayout1.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayoutCompat.LayoutParams.WRAP_CONTENT,1));
+        linearLayout1.setOrientation(LinearLayout.VERTICAL);
+
+        TextView textView = new TextView(this);
+        textView.setText("Info408");
+        TextView textView1 = new TextView(this);
+        textView1.setText("DR.HUSSEIN WEHBE");
+
+
+        ImageButton regsButton = new ImageButton(this);
+        int idSearchbButton = getResources().getIdentifier("com.kassem.mohamad.checkinclass:drawable/ic_add_black_24dp" , null, null);
+        regsButton.setImageResource(idSearchbButton);
+
+        ImageButton exitButton = new ImageButton(this);
+        int idExitImage = getResources().getIdentifier("com.kassem.mohamad.checkinclass:drawable/ic_close_black_24dp" , null, null);
+        exitButton.setImageResource(idExitImage);
+        exitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                linearLayout.removeAllViews();
+            }
+        });
+
+        linearLayout1.addView(textView);
+        linearLayout1.addView(textView1);
+
+        linearLayout.addView(linearLayout1);
+        linearLayout.addView(regsButton);
+        linearLayout.addView(exitButton);
+    }
+
+    public void onClassNotexist(){
+        Toast.makeText(getApplicationContext(),"Class Not Found",Toast.LENGTH_LONG).show();
+    }
+
+    public boolean validateId(EditText editText){
+        if(!editText.getText().equals("1")){
+            Toast.makeText(getApplicationContext(),"not empty",Toast.LENGTH_LONG).show();
+           return true;
+        }
+        Toast.makeText(getApplicationContext(),"empty",Toast.LENGTH_LONG).show();
+        return false;
     }
 }

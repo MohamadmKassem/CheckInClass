@@ -14,11 +14,13 @@ import java.net.*;
 import java.util.Scanner;
 
 
-class LoginThread extends AsyncTask<String, Void, String> {
-    LoginActivity m;
-    LoginThread(LoginActivity m)
+class AddClassThread extends AsyncTask<String, Void, String> {
+    MainActivity m;
+    int id;
+    AddClassThread(MainActivity m,String id)
     {
         this.m=m;
+        this.id=Integer.parseInt(id);
     }
     protected String doInBackground(String...params) {
         PrintWriter out;
@@ -30,7 +32,7 @@ class LoginThread extends AsyncTask<String, Void, String> {
             s.connect(new InetSocketAddress("192.168.43.157",8082),4000);
             in =new Scanner(s.getInputStream());
             out = new PrintWriter(s.getOutputStream(),true);
-            out.println("login--#--"+params[0]+"--#--"+params[1]);
+            out.println("searchClass--#--"+id);
             String r=in.nextLine();
             //DatagramSocket D = new DatagramSocket();
             //byte[] b ="hello".getBytes();

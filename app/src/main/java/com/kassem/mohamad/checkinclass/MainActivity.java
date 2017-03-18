@@ -55,13 +55,14 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager mViewPager;
 
     public static int request_code = 1;
+    public String result;
 
-
+    public MainActivity m;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        m=this;
         System.out.println("create");
         Toast.makeText(getApplicationContext(),"create",Toast.LENGTH_LONG).show();
 
@@ -239,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
         linearLayout.removeAllViews();
 
 
-        EditText editText = new EditText(this);
+        final EditText editText = new EditText(this);
         editText.setHint("Enter The ID");
         editText.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayoutCompat.LayoutParams.WRAP_CONTENT,1));
 
@@ -254,11 +255,15 @@ public class MainActivity extends AppCompatActivity {
                 progressDialog.setIndeterminate(true);
                 progressDialog.setMessage("Search a class ...");
                 progressDialog.show();
+                String id= editText.getText().toString();
+                result="";
+                AddClassThread a=new AddClassThread(m,id);
+                a.execute();
                 new android.os.Handler().postDelayed(
                         new Runnable() {
                             public void run()
                             {
-
+                                editText.setText(result);
                                 progressDialog.dismiss();
                             }
                         }, 5000);

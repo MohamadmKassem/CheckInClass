@@ -1,12 +1,16 @@
 package com.kassem.mohamad.checkinclass;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.Toolbar;
 
 import android.support.v4.app.Fragment;
@@ -20,12 +24,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
@@ -47,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static int request_code = 1;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,8 +75,9 @@ public class MainActivity extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        final TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -74,22 +85,29 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+
+                if(tabLayout.getSelectedTabPosition() == 0){
+                    Toast.makeText(getApplicationContext(),"student",Toast.LENGTH_LONG).show();
+                    addClass();
+                }
+                else if(tabLayout.getSelectedTabPosition() == 1){
+                    Toast.makeText(getApplicationContext(),"professor",Toast.LENGTH_LONG).show();
+                }
+
             }
         });
 
-        System.out.println("main0");
         // check if already login
         String s = "";
         try{
-            File file = new File("login");
-            if(!file.exists()){
-                System.out.println("main1");
-                Intent intent = new Intent(this, LoginActivity.class);
-                startActivityForResult(intent,request_code);
-            }
-            else {
+            //File file = new File("login.txt");
+          //  if(!file.exists()){
+             //   System.out.println("main1");
+             //   Intent intent = new Intent(this, LoginActivity.class);
+             //   startActivityForResult(intent,request_code);
+           // }
+          //  else {
                 FileInputStream inputStream = openFileInput("login");
-                System.out.println("main2");
                 int i;
                 while((i=inputStream.read()) != -1){
                     s += String.valueOf((char)i);
@@ -98,11 +116,14 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent(this, LoginActivity.class);
                     startActivityForResult(intent,request_code);
                 }
-            }
+         //   }
         }
         catch (Exception ex){
-            System.out.println("main3");
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivityForResult(intent,request_code);
         }
+
+
 
     }
 
@@ -128,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.action_sign_out:
                 Toast.makeText(getApplicationContext(),"sign out", Toast.LENGTH_LONG).show();
+                signOut();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -135,6 +157,21 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void signOut(){
+        String loginfile = "login";
+        FileOutputStream outputStream;
+        try{
+            outputStream = openFileOutput(loginfile, Context.MODE_PRIVATE);
+            outputStream.write(new String("").getBytes());
+            outputStream.close();
+            //this.onCreate(null);
+            Intent intent = new Intent(this,MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
+        catch (Exception ex){
+        }
+    }
 
 
     /**
@@ -145,6 +182,7 @@ public class MainActivity extends AppCompatActivity {
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
+
         }
 
         @Override
@@ -179,6 +217,8 @@ public class MainActivity extends AppCompatActivity {
             }
             return null;
         }
+
+
     }
 
     @Override
@@ -193,4 +233,54 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // Registration to a new class
+    private void addClass(){
+        final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.search_class_linear_layout);
+        linearLayout.removeAllViews();
+
+
+        EditText editText = new EditText(this);
+        editText.setHint("Enter The ID");
+        editText.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayoutCompat.LayoutParams.WRAP_CONTENT,1));
+
+        ImageButton searchButton = new ImageButton(this);
+        int idSearchbButton = getResources().getIdentifier("com.kassem.mohamad.checkinclass:drawable/ic_search_black_24dp" , null, null);
+        searchButton.setImageResource(idSearchbButton);
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // search for the new class
+                final ProgressDialog progressDialog = new ProgressDialog(MainActivity.this, R.style.AppTheme_Dark_Dialog);
+                progressDialog.setIndeterminate(true);
+                progressDialog.setMessage("Search a class ...");
+                progressDialog.show();
+                new android.os.Handler().postDelayed(
+                        new Runnable() {
+                            public void run()
+                            {
+
+                                progressDialog.dismiss();
+                            }
+                        }, 5000);
+            }
+        });
+
+        ImageButton exitButton = new ImageButton(this);
+        int idExitImage = getResources().getIdentifier("com.kassem.mohamad.checkinclass:drawable/ic_close_black_24dp" , null, null);
+        exitButton.setImageResource(idExitImage);
+        exitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                linearLayout.removeAllViews();
+            }
+        });
+
+        linearLayout.addView(editText);
+        linearLayout.addView(searchButton);
+        linearLayout.addView(exitButton);
+    }
+
+    public void onClassExist(){
+
+    }
 }

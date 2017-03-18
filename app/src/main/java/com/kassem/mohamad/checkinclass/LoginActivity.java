@@ -107,9 +107,10 @@ public class LoginActivity extends AppCompatActivity {
             outputStream = openFileOutput(loginfile, Context.MODE_PRIVATE);
             outputStream.write(mailAddress.getBytes());
             outputStream.close();
+            System.out.println("successsssssssssssssssssssss");
         }
         catch (Exception ex){
-
+            System.out.println("erroooooooooooooooooooooooooooooooooooe");
         }
         finish();
     }

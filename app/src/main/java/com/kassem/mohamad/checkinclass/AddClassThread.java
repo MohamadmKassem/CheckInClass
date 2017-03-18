@@ -28,7 +28,7 @@ class AddClassThread extends AsyncTask<String, Void, String> {
         Socket s;
         try {
             //s = new Socket("192.168.43.157",8082);
-            int i;
+            
             s=new Socket();
             s.connect(new InetSocketAddress("192.168.43.157",8082),4000);
             in =new Scanner(s.getInputStream());

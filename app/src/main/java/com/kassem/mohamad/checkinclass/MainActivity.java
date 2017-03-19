@@ -19,6 +19,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -242,6 +243,7 @@ public class MainActivity extends AppCompatActivity {
 
         final EditText editText = new EditText(this);
         editText.setHint("Enter The ID");
+        editText.setInputType(InputType.TYPE_CLASS_NUMBER);
         editText.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayoutCompat.LayoutParams.WRAP_CONTENT,1));
 
         ImageButton searchButton = new ImageButton(this);
@@ -251,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // search for the new class
-                if(validateId(editText)){
+                if(!validateId(editText)){
                     editText.setError("Invalide Id");
                     return;
                 }
@@ -263,14 +265,18 @@ public class MainActivity extends AppCompatActivity {
                 String id= editText.getText().toString();
                 result="";
                 AddClassThread a=new AddClassThread(m,id);
+                System.out.println("thread3");
                 a.execute();
                 new android.os.Handler().postDelayed(
                         new Runnable() {
                             public void run()
                             {
-                                editText.setText(result);
-                                onClassExist();
-                                //onClassNotexist();
+                               if(result.equals("")){
+                                   onClassNotexist();
+                               }
+                               else {
+                                   onClassExist();
+                               }
                                 progressDialog.dismiss();
                             }
                         }, 5000);
@@ -333,11 +339,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public boolean validateId(EditText editText){
-        if(!editText.getText().equals("1")){
-            Toast.makeText(getApplicationContext(),"not empty",Toast.LENGTH_LONG).show();
+        if(!editText.getText().toString().isEmpty()){
            return true;
         }
-        Toast.makeText(getApplicationContext(),"empty",Toast.LENGTH_LONG).show();
         return false;
     }
 }

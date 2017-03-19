@@ -20,13 +20,17 @@ class AddClassThread extends AsyncTask<String, Void, String> {
     AddClassThread(MainActivity m,String id)
     {
         this.m=m;
+        System.out.println("thread1");
+
         this.id=Integer.parseInt(id);
+        System.out.println("thread2");
     }
     protected String doInBackground(String...params) {
         PrintWriter out;
         Scanner in;
         Socket s;
         try {
+            System.out.println("thread");
             //s = new Socket("192.168.43.157",8082);
             
             s=new Socket();
@@ -52,6 +56,6 @@ class AddClassThread extends AsyncTask<String, Void, String> {
     }
     protected void onPostExecute(String r) {
         super.onPostExecute(r);
-        if(r!="")m.result=r;
+        if(r!="") m.result=r;
     }
 }

@@ -7,7 +7,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
-    tools:context="com.kassem.mohamad.checkinclass.MainActivity$PlaceholderFragment">
+    tools:context="com.kassem.mohamad.checkinclass.MainActivity">
 
     <LinearLayout
         android:id="@+id/search_class_linear_layout"

@@ -14,14 +14,15 @@ import java.net.*;
 import java.util.Scanner;
 
 
-class AddClassThread extends AsyncTask<String, Void, String> {
+class CreateClassThread extends AsyncTask<String, Void, String> {
     MainActivity m;
-    int id;
-    AddClassThread(MainActivity m,String id)
+    String email;
+    String name;
+    CreateClassThread(MainActivity m,String email,String name)
     {
         this.m=m;
-        try{this.id=Integer.parseInt(id);}
-        catch(Exception e){this.id=0;}
+        this.email=email;
+        this.name=name;
     }
     protected String doInBackground(String...params) {
         PrintWriter out;
@@ -34,7 +35,7 @@ class AddClassThread extends AsyncTask<String, Void, String> {
             s.connect(new InetSocketAddress("192.168.43.157",8082),4000);
             in =new Scanner(s.getInputStream());
             out = new PrintWriter(s.getOutputStream(),true);
-            out.println("searchClass--#--"+id);
+            out.println("addClass--#--"+email+"--#--"+name);
             String r=in.nextLine();
             //DatagramSocket D = new DatagramSocket();
             //byte[] b ="hello".getBytes();
@@ -47,7 +48,7 @@ class AddClassThread extends AsyncTask<String, Void, String> {
         catch (Exception e)
         {
             //error=e.getMessage();
-            return "";
+            return "failure:0";
         }
 
     }

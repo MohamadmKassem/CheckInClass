@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -19,7 +18,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,6 +36,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -58,8 +57,9 @@ public class MainActivity extends AppCompatActivity {
 
     public static int request_code = 1;
     public String result;
-
+    private String email;
     public MainActivity m;
+    String nametocreate;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,17 +90,19 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
 
                 if(tabLayout.getSelectedTabPosition() == 0){
+                    Toast.makeText(getApplicationContext(),"student",Toast.LENGTH_LONG).show();
                     addClass();
                 }
                 else if(tabLayout.getSelectedTabPosition() == 1){
                     Toast.makeText(getApplicationContext(),"professor",Toast.LENGTH_LONG).show();
+                    create_class();
                 }
 
             }
         });
 
         // check if already login
-        String s = "";
+        email = "";
         try{
             //File file = new File("login.txt");
           //  if(!file.exists()){
@@ -112,9 +114,9 @@ public class MainActivity extends AppCompatActivity {
                 FileInputStream inputStream = openFileInput("login");
                 int i;
                 while((i=inputStream.read()) != -1){
-                    s += String.valueOf((char)i);
+                    email += String.valueOf((char)i);
                 }
-                if(s.equals("")){
+                if(email.equals("")){
                     Intent intent = new Intent(this, LoginActivity.class);
                     startActivityForResult(intent,request_code);
                 }
@@ -124,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivityForResult(intent,request_code);
         }
-
+    //refreshProfData();
 
 
     }
@@ -192,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
             // Returning the current tabs
             switch (position){
                 case 0:
-                    StudentTab studentTab = new StudentTab();
+                StudentTab studentTab = new StudentTab();
                     return studentTab;
                 case 1:
                     ProfessorTab professorTab = new ProfessorTab();
@@ -243,7 +245,6 @@ public class MainActivity extends AppCompatActivity {
 
         final EditText editText = new EditText(this);
         editText.setHint("Enter The ID");
-        editText.setInputType(InputType.TYPE_CLASS_NUMBER);
         editText.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayoutCompat.LayoutParams.WRAP_CONTENT,1));
 
         ImageButton searchButton = new ImageButton(this);
@@ -253,33 +254,28 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // search for the new class
-                if(!validateId(editText)){
-                    editText.setError("Invalide Id");
-                    return;
-                }
-                editText.setError(null);
+
+               try{
+                   String id= editText.getText().toString();
+
                 final ProgressDialog progressDialog = new ProgressDialog(MainActivity.this, R.style.AppTheme_Dark_Dialog);
                 progressDialog.setIndeterminate(true);
                 progressDialog.setMessage("Search a class ...");
                 progressDialog.show();
-                String id= editText.getText().toString();
+
                 result="";
                 AddClassThread a=new AddClassThread(m,id);
-                System.out.println("thread3");
                 a.execute();
                 new android.os.Handler().postDelayed(
                         new Runnable() {
                             public void run()
                             {
-                               if(result.equals("")){
-                                   onClassNotexist();
-                               }
-                               else {
-                                   onClassExist();
-                               }
+                                editText.setText(result);
                                 progressDialog.dismiss();
                             }
                         }, 5000);
+               }
+               catch(Exception e){}
             }
         });
 
@@ -297,25 +293,87 @@ public class MainActivity extends AppCompatActivity {
         linearLayout.addView(searchButton);
         linearLayout.addView(exitButton);
     }
-
-    public void onClassExist(){
-        final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.search_class_linear_layout);
+    private void create_class()
+    {
+        final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.prof_linear_layout);
         linearLayout.removeAllViews();
+        final EditText editText = new EditText(this);
+        editText.setHint("Class name");
+        editText.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayoutCompat.LayoutParams.WRAP_CONTENT,1));
+        ImageButton createButton = new ImageButton(this);
+        int idButton = getResources().getIdentifier("com.kassem.mohamad.checkinclass:drawable/ic_add_box_black_24dp" , null, null);
+        createButton.setImageResource(idButton);
+        createButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // search for the new class
 
-        LinearLayout linearLayout1 = new LinearLayout(this);
-        linearLayout1.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayoutCompat.LayoutParams.WRAP_CONTENT,1));
-        linearLayout1.setOrientation(LinearLayout.VERTICAL);
+                try{
+                    nametocreate= editText.getText().toString();
+                    if(!nametocreate.equals("")) {
+                        final ProgressDialog progressDialog = new ProgressDialog(MainActivity.this, R.style.AppTheme_Dark_Dialog);
+                        progressDialog.setIndeterminate(true);
+                        progressDialog.setMessage("creating ...");
+                        progressDialog.show();
 
-        TextView textView = new TextView(this);
-        textView.setText("Info408");
-        TextView textView1 = new TextView(this);
-        textView1.setText("DR.HUSSEIN WEHBE");
+                        result = "";
+                        CreateClassThread a = new CreateClassThread(m, email, nametocreate);
+                        a.execute();
+                        new android.os.Handler().postDelayed(
+                                new Runnable() {
+                                    public void run() {
+                                        if(result.equals("failure:0"))
+                                            Toast.makeText(getApplicationContext(),"failure", Toast.LENGTH_LONG).show();
+                                        else
+                                        {
+                                            Toast.makeText(getApplicationContext(),"not failure!", Toast.LENGTH_LONG).show();
 
+                                            try
+                                            {
+                                                FileInputStream inputStream = openFileInput("profClass");
+                                                int i;
+                                                Toast.makeText(getApplicationContext(),"open the file!", Toast.LENGTH_LONG).show();
 
-        ImageButton regsButton = new ImageButton(this);
-        int idSearchbButton = getResources().getIdentifier("com.kassem.mohamad.checkinclass:drawable/ic_add_black_24dp" , null, null);
-        regsButton.setImageResource(idSearchbButton);
+                                                String data="";
+                                                while ((i = inputStream.read()) != -1)
+                                                {
+                                                    data += String.valueOf((char) i);
+                                                }
+                                                data+="--#--"+nametocreate+"--#--"+result.split(":")[1];
+                                                inputStream.close();
+                                                Toast.makeText(getApplicationContext(),"getthedata!", Toast.LENGTH_LONG).show();
 
+                                                FileOutputStream outputStream;
+                                                String filename="profClass";
+                                                outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+                                                outputStream.write(data.getBytes());
+                                                outputStream.close();
+                                            }
+                                            catch(Exception e)
+                                            {
+                                                FileOutputStream outputStream;
+                                                String filename="profClass";
+                                                Toast.makeText(getApplicationContext(),"profclass first time!", Toast.LENGTH_LONG).show();
+                                                try
+                                                {
+                                                    outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+                                                    outputStream.write(new String(nametocreate+"--#--"+result.split(":")[1]).getBytes());
+                                                    outputStream.close();
+                                                }
+                                                catch (IOException e1){}
+
+                                            }
+                                            refreshProfData();
+                                        }
+                                        progressDialog.dismiss();
+                                    }
+                                }, 5000);
+                    }else Toast.makeText(getApplicationContext(),"enter a class name!", Toast.LENGTH_LONG).show();
+                }
+                catch(Exception e){}
+
+            }
+        });
         ImageButton exitButton = new ImageButton(this);
         int idExitImage = getResources().getIdentifier("com.kassem.mohamad.checkinclass:drawable/ic_close_black_24dp" , null, null);
         exitButton.setImageResource(idExitImage);
@@ -326,22 +384,42 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        linearLayout1.addView(textView);
-        linearLayout1.addView(textView1);
-
-        linearLayout.addView(linearLayout1);
-        linearLayout.addView(regsButton);
+        linearLayout.addView(editText);
+        linearLayout.addView(createButton);
         linearLayout.addView(exitButton);
     }
-
-    public void onClassNotexist(){
-        Toast.makeText(getApplicationContext(),"Class Not Found",Toast.LENGTH_LONG).show();
-    }
-
-    public boolean validateId(EditText editText){
-        if(!editText.getText().toString().isEmpty()){
-           return true;
+    private void refreshProfData()
+    {
+        final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.prof_data);
+        linearLayout.removeAllViews();
+        FileInputStream inputStream = null;
+        try {
+            String s2="";
+            inputStream = openFileInput("profClass");
+            int i;
+            while((i=inputStream.read()) != -1){
+                s2 += String.valueOf((char)i);
+            }
+            if(!s2.equals(""))
+            {
+                String[] data=s2.split("--#--");
+                int len;
+                for(len=0;len<data.length;len++)
+                {
+                    TextView t=new TextView(this);
+                    t.setText(data[len]);
+                    linearLayout.addView(t);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return false;
+
+
+    }
+    public void onClassExist(){
+
     }
 }

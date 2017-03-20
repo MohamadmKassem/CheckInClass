@@ -41,7 +41,6 @@ public class LoginActivity extends AppCompatActivity {
             onLoginFailed("Login failed");
             return;
         }
-
         loginButton.setEnabled(false);
 
         final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this, R.style.AppTheme_Dark_Dialog);

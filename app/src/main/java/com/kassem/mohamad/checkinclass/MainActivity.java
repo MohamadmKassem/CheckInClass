@@ -24,10 +24,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,13 +63,20 @@ public class MainActivity extends AppCompatActivity {
     private String email;
     public MainActivity m;
     String nametocreate;
+    private boolean isFirstOpenStudentTab = true;
+    private boolean isFirstOpenProftTab = true;
+
+
+    ClassesAdapter classesAdapter;
+    ArrayList<Class> createdClasses;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         m=this;
-        System.out.println("create");
-        Toast.makeText(getApplicationContext(),"create",Toast.LENGTH_LONG).show();
+        createdClasses = new ArrayList<Class>();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -77,6 +87,35 @@ public class MainActivity extends AppCompatActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                if(isFirstOpenStudentTab){
+                    if(position == 0){
+                    }
+                    isFirstOpenStudentTab = false;
+                }
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if(position == 0){
+
+                }
+                else if(position == 1){
+                    if(isFirstOpenProftTab){
+                        refreshProfData();
+                    }
+                    isFirstOpenProftTab = false;
+                }
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
 
         final TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
@@ -90,11 +129,9 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
 
                 if(tabLayout.getSelectedTabPosition() == 0){
-                    Toast.makeText(getApplicationContext(),"student",Toast.LENGTH_LONG).show();
                     addClass();
                 }
                 else if(tabLayout.getSelectedTabPosition() == 1){
-                    Toast.makeText(getApplicationContext(),"professor",Toast.LENGTH_LONG).show();
                     create_class();
                 }
 
@@ -104,31 +141,20 @@ public class MainActivity extends AppCompatActivity {
         // check if already login
         email = "";
         try{
-            //File file = new File("login.txt");
-          //  if(!file.exists()){
-             //   System.out.println("main1");
-             //   Intent intent = new Intent(this, LoginActivity.class);
-             //   startActivityForResult(intent,request_code);
-           // }
-          //  else {
-                FileInputStream inputStream = openFileInput("login");
-                int i;
-                while((i=inputStream.read()) != -1){
-                    email += String.valueOf((char)i);
-                }
-                if(email.equals("")){
-                    Intent intent = new Intent(this, LoginActivity.class);
-                    startActivityForResult(intent,request_code);
-                }
-         //   }
+            FileInputStream inputStream = openFileInput("login");
+            int i;
+            while((i=inputStream.read()) != -1){
+                email += String.valueOf((char)i);
+            }
+            if(email.equals("")){
+                Intent intent = new Intent(this, LoginActivity.class);
+                startActivityForResult(intent,request_code);
+            }
         }
         catch (Exception ex){
             Intent intent = new Intent(this, LoginActivity.class);
             startActivityForResult(intent,request_code);
         }
-    //refreshProfData();
-
-
     }
 
 
@@ -206,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
+            // Show 2 total pages.
             return 2;
         }
 
@@ -229,10 +255,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == request_code) {
             if (resultCode == RESULT_OK) {
-
-                // TODO: Implement successful signup logic here
-                // By default we just finish the Activity and log them in automatically
-                this.finish();
+                if(data == null){
+                    this.finish();
+                }
+                else {
+                    email = data.getData().toString();
+                }
             }
         }
     }
@@ -293,8 +321,9 @@ public class MainActivity extends AppCompatActivity {
         linearLayout.addView(searchButton);
         linearLayout.addView(exitButton);
     }
-    private void create_class()
-    {
+
+
+    private void create_class() {
         final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.prof_linear_layout);
         linearLayout.removeAllViews();
         final EditText editText = new EditText(this);
@@ -313,62 +342,62 @@ public class MainActivity extends AppCompatActivity {
                     if(!nametocreate.equals("")) {
                         final ProgressDialog progressDialog = new ProgressDialog(MainActivity.this, R.style.AppTheme_Dark_Dialog);
                         progressDialog.setIndeterminate(true);
-                        progressDialog.setMessage("creating ...");
+                        progressDialog.setMessage("Creating ...");
                         progressDialog.show();
 
                         result = "";
+                        final boolean[] error = {false};
                         CreateClassThread a = new CreateClassThread(m, email, nametocreate);
                         a.execute();
                         new android.os.Handler().postDelayed(
                                 new Runnable() {
                                     public void run() {
-                                        if(result.equals("failure:0"))
-                                            Toast.makeText(getApplicationContext(),"failure", Toast.LENGTH_LONG).show();
-                                        else
-                                        {
-                                            Toast.makeText(getApplicationContext(),"not failure!", Toast.LENGTH_LONG).show();
-
-                                            try
-                                            {
+                                        if(result.equals("failure:0")) {
+                                            Toast.makeText(getApplicationContext(), "Failure", Toast.LENGTH_LONG).show();
+                                        }
+                                        else {
+                                            linearLayout.removeAllViews();
+                                            try {
                                                 FileInputStream inputStream = openFileInput("profClass");
                                                 int i;
-                                                Toast.makeText(getApplicationContext(),"open the file!", Toast.LENGTH_LONG).show();
-
-                                                String data="";
-                                                while ((i = inputStream.read()) != -1)
-                                                {
+                                                String data = "";
+                                                while ((i = inputStream.read()) != -1) {
                                                     data += String.valueOf((char) i);
                                                 }
-                                                data+="--#--"+nametocreate+"--#--"+result.split(":")[1];
+                                                data += "--#--" + nametocreate + "--#--" + result.split(":")[1];
                                                 inputStream.close();
-                                                Toast.makeText(getApplicationContext(),"getthedata!", Toast.LENGTH_LONG).show();
 
                                                 FileOutputStream outputStream;
-                                                String filename="profClass";
+                                                String filename = "profClass";
                                                 outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
                                                 outputStream.write(data.getBytes());
                                                 outputStream.close();
                                             }
-                                            catch(Exception e)
-                                            {
+                                            catch(Exception e) {
                                                 FileOutputStream outputStream;
                                                 String filename="profClass";
-                                                Toast.makeText(getApplicationContext(),"profclass first time!", Toast.LENGTH_LONG).show();
-                                                try
-                                                {
+                                                try {
                                                     outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-                                                    outputStream.write(new String(nametocreate+"--#--"+result.split(":")[1]).getBytes());
+                                                    outputStream.write(new String(nametocreate + "--#--" + result.split(":")[1]).getBytes());
                                                     outputStream.close();
                                                 }
-                                                catch (IOException e1){}
+                                                catch (IOException e1){
+                                                    error[0] = true;
+                                                }
 
                                             }
-                                            refreshProfData();
+                                            if(!error[0]){
+                                                createdClasses.add(new Class(nametocreate, result.split(":")[1]));
+                                                classesAdapter.notifyDataSetChanged();
+                                            }
                                         }
                                         progressDialog.dismiss();
                                     }
                                 }, 5000);
-                    }else Toast.makeText(getApplicationContext(),"enter a class name!", Toast.LENGTH_LONG).show();
+                    }
+                    else {
+                        editText.setError("Enter a class name!");
+                    }
                 }
                 catch(Exception e){}
 
@@ -388,38 +417,86 @@ public class MainActivity extends AppCompatActivity {
         linearLayout.addView(createButton);
         linearLayout.addView(exitButton);
     }
-    private void refreshProfData()
-    {
-        final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.prof_data);
-        linearLayout.removeAllViews();
+    private boolean loadClassesArray(){
         FileInputStream inputStream = null;
         try {
-            String s2="";
+            String s2 = "";
             inputStream = openFileInput("profClass");
             int i;
             while((i=inputStream.read()) != -1){
                 s2 += String.valueOf((char)i);
             }
-            if(!s2.equals(""))
-            {
+            if(!s2.equals("")) {
                 String[] data=s2.split("--#--");
                 int len;
-                for(len=0;len<data.length;len++)
-                {
-                    TextView t=new TextView(this);
-                    t.setText(data[len]);
-                    linearLayout.addView(t);
+                for(len=0; len < data.length; len += 2) {
+                    createdClasses.add(new Class(data[len],data[len+1]));
                 }
+                return true;
             }
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            return false;
         } catch (IOException e) {
-            e.printStackTrace();
+            return false;
+        }
+        return false;
+    }
+
+    private void refreshProfData() {
+        if(loadClassesArray()) {
+            classesAdapter = new ClassesAdapter(createdClasses);
+            ListView classesListView = (ListView) findViewById(R.id.classes_created_listView);
+            classesListView.setAdapter(classesAdapter);
+            classesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    TextView className = (TextView) view.findViewById(R.id.classname);
+                    TextView classid = (TextView) view.findViewById(R.id.classid);
+                    Toast.makeText(getApplicationContext(),"ID: " + classid.getText().toString()+", Name: "+className.getText().toString(),Toast.LENGTH_SHORT).show();
+
+                }
+            });
+        }
+        else {
+            Toast.makeText(getApplicationContext(),"Load Data is Failure",Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    class ClassesAdapter extends BaseAdapter {
+
+        ArrayList<Class> createdClasses = new ArrayList<Class>();
+
+        ClassesAdapter(ArrayList<Class> createdClasses) {
+            this.createdClasses = createdClasses;
         }
 
+        @Override
+        public int getCount() {
+            return createdClasses.size();
+        }
 
-    }
-    public void onClassExist(){
+        @Override
+        public Object getItem(int i) {
+            return null;
+        }
 
+        @Override
+        public long getItemId(int i) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup) {
+            LayoutInflater layoutInflater = getLayoutInflater();
+            View view1 = layoutInflater.inflate(R.layout.created_classes_layout,null);
+            TextView nameTextView = (TextView) view1.findViewById(R.id.classname);
+            TextView idTextView = (TextView) view1.findViewById(R.id.classid);
+            nameTextView.setText(createdClasses.get(i).getName());
+            idTextView.setText(createdClasses.get(i).getId());
+            return view1;
+        }
     }
+
+
 }

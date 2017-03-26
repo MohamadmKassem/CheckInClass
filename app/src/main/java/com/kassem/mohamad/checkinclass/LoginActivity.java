@@ -91,7 +91,6 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         // disable going back to the MainActivity
-        Toast.makeText(getApplicationContext(),"back",Toast.LENGTH_LONG).show();
         //moveTaskToBack(true);
         setResult(RESULT_OK, null);
         finish();

@@ -387,8 +387,13 @@ public class MainActivity extends AppCompatActivity {
 
                                             }
                                             if(!error[0]){
-                                                createdClasses.add(new Class(nametocreate, result.split(":")[1]));
-                                                classesAdapter.notifyDataSetChanged();
+                                                if(createdClasses.size() == 0){
+                                                    refreshProfData();
+                                                }
+                                                else {
+                                                    createdClasses.add(new Class(nametocreate, result.split(":")[1]));
+                                                    classesAdapter.notifyDataSetChanged();
+                                                }
                                             }
                                         }
                                         progressDialog.dismiss();

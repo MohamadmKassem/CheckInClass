@@ -70,12 +70,19 @@ public class MainActivity extends AppCompatActivity {
     ClassesAdapter classesAdapter;
     ArrayList<Class> createdClasses;
 
+    DatabaseHandler db;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         m=this;
+
+        db  = new DatabaseHandler(this);
+
+        // Toast.makeText(getApplicationContext(),db.getClass(1).getId()+","+db.getClass(1).getName()+","+db.getClass(1).getEmail()+","+db.getClass(1).getLocation(),Toast.LENGTH_SHORT).show();
+
         createdClasses = new ArrayList<Class>();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -125,8 +132,8 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+               // Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                    //    .setAction("Action", null).show();
 
                 if(tabLayout.getSelectedTabPosition() == 0){
                     addClass();
@@ -298,7 +305,34 @@ public class MainActivity extends AppCompatActivity {
                         new Runnable() {
                             public void run()
                             {
-                                editText.setText(result);
+                                if(!result.equals("") && !result.equals("failure:0")){
+                                    linearLayout.removeAllViews();
+                                    LinearLayout newClassAdd  = new LinearLayout(m);
+                                    newClassAdd.setOrientation(LinearLayout.VERTICAL);
+                                    TextView newClass = new TextView(m);
+                                    newClass.setText(result.split(":")[2]);
+                                    TextView prof = new TextView(m);
+                                    prof.setText(result.split(":")[1]);
+                                    newClassAdd.addView(newClass);
+                                    newClassAdd.addView(prof);
+
+                                    ImageButton register = new ImageButton(m);
+                                    int idSearchbButton = getResources().getIdentifier("com.kassem.mohamad.checkinclass:drawable/ic_add_box_black_24dp" , null, null);
+                                    register.setImageResource(idSearchbButton);
+                                    register.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            Toast.makeText(getApplicationContext(),"Register",Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+
+                                    linearLayout.addView(newClassAdd);
+                                    linearLayout.addView(register);
+
+                                }
+                                else {
+                                    Toast.makeText(getApplicationContext(),"Search class failed",Toast.LENGTH_SHORT).show();
+                                }
                                 progressDialog.dismiss();
                             }
                         }, 5000);
@@ -372,6 +406,7 @@ public class MainActivity extends AppCompatActivity {
                                                 outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
                                                 outputStream.write(data.getBytes());
                                                 outputStream.close();
+                                                db.addClass(new Class(nametocreate, result.split(":")[1], email, "0"));
                                             }
                                             catch(Exception e) {
                                                 FileOutputStream outputStream;

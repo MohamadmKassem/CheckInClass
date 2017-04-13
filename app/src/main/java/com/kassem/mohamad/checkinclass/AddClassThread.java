@@ -54,6 +54,6 @@ class AddClassThread extends AsyncTask<String, Void, String> {
     }
     protected void onPostExecute(String r) {
         super.onPostExecute(r);
-        if(r!="")m.result=r;
+        if(r!="") m.result=r;
     }
 }

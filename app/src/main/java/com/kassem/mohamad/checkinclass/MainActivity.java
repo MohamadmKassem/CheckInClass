@@ -40,6 +40,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -111,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else if(position == 1){
                     if(isFirstOpenProftTab){
-                        refreshProfData();
+                        refreshProfData(false);
                     }
                     isFirstOpenProftTab = false;
                 }
@@ -134,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                // Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                     //    .setAction("Action", null).show();
+
 
                 if(tabLayout.getSelectedTabPosition() == 0){
                     addClass();
@@ -391,7 +393,7 @@ public class MainActivity extends AppCompatActivity {
                                         }
                                         else {
                                             linearLayout.removeAllViews();
-                                            try {
+                                            /*try {
                                                 FileInputStream inputStream = openFileInput("profClass");
                                                 int i;
                                                 String data = "";
@@ -405,9 +407,10 @@ public class MainActivity extends AppCompatActivity {
                                                 String filename = "profClass";
                                                 outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
                                                 outputStream.write(data.getBytes());
-                                                outputStream.close();
+                                                outputStream.close();*/
                                                 db.addClass(new Class(nametocreate, result.split(":")[1], email, "0"));
-                                            }
+                                                refreshProfData(false);
+                                            /*}
                                             catch(Exception e) {
                                                 FileOutputStream outputStream;
                                                 String filename="profClass";
@@ -420,8 +423,8 @@ public class MainActivity extends AppCompatActivity {
                                                     error[0] = true;
                                                 }
 
-                                            }
-                                            if(!error[0]){
+                                            }*/
+                                            /*if(!error[0]){
                                                 if(createdClasses.size() == 0){
                                                     refreshProfData();
                                                 }
@@ -429,7 +432,7 @@ public class MainActivity extends AppCompatActivity {
                                                     createdClasses.add(new Class(nametocreate, result.split(":")[1]));
                                                     classesAdapter.notifyDataSetChanged();
                                                 }
-                                            }
+                                            }*/
                                         }
                                         progressDialog.dismiss();
                                     }
@@ -482,9 +485,32 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-    private void refreshProfData() {
-        if(loadClassesArray()) {
-            classesAdapter = new ClassesAdapter(createdClasses);
+    public void refreshProfData(boolean fromThread) {
+        //Toast.makeText(getApplicationContext(),"here",Toast.LENGTH_SHORT).show();
+        //ArrayList<Class> lc =new ArrayList<Class>();
+
+        ArrayList<Class> lc=db.getAllclass();
+        if(lc.size()==0 && fromThread==false)
+        {
+
+            GetClassesDataThread gd=new GetClassesDataThread(this);
+            gd.execute(email);
+            new android.os.Handler().postDelayed(
+                    new Runnable() {
+                        public void run()
+                        {
+                            if(!result.equals("done:0") && !result.equals("failure"))
+                            {
+                                refreshProfData(true);
+                            }
+                            else if(result.equals("done:0"))
+                                Toast.makeText(getApplicationContext(),"no classes yet",Toast.LENGTH_SHORT).show();
+                            else Toast.makeText(getApplicationContext(),"no connection",Toast.LENGTH_SHORT).show();
+                        }
+                    }, 3500);
+        }
+        if(lc.size()!=0){
+            classesAdapter = new ClassesAdapter(lc);
             ListView classesListView = (ListView) findViewById(R.id.classes_created_listView);
             classesListView.setAdapter(classesAdapter);
             classesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -492,13 +518,13 @@ public class MainActivity extends AppCompatActivity {
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     TextView className = (TextView) view.findViewById(R.id.classname);
                     TextView classid = (TextView) view.findViewById(R.id.classid);
-                    Toast.makeText(getApplicationContext(),"ID: " + classid.getText().toString()+", Name: "+className.getText().toString(),Toast.LENGTH_SHORT).show();
+                    Intent I=new Intent(m,SpeceficClass.class);
+                    I.putExtra("ClassName",className.getText().toString());
+                    I.putExtra("ClassId",classid.getText().toString());
+                    startActivity(I);
 
                 }
             });
-        }
-        else {
-            Toast.makeText(getApplicationContext(),"Load Data is Failure",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -528,8 +554,10 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
+
             LayoutInflater layoutInflater = getLayoutInflater();
             View view1 = layoutInflater.inflate(R.layout.created_classes_layout,null);
+
             TextView nameTextView = (TextView) view1.findViewById(R.id.classname);
             TextView idTextView = (TextView) view1.findViewById(R.id.classid);
             nameTextView.setText(createdClasses.get(i).getName());

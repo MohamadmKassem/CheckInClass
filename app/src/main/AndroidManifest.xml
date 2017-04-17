@@ -12,30 +12,37 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
-
         <activity
             android:name=".LoginActivity"
             android:label="@string/login_activity"
             android:theme="@style/AppTheme.Dark" />
-
         <activity
             android:name=".SignupActivity"
             android:label="@string/signup_activity"
             android:theme="@style/AppTheme.Dark" />
-
+        <activity android:name=".SpeceficClass" />
+        <activity
+            android:name=".Student_of_lectures"
+            android:label="@string/title_activity_student_of_lectures"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".request_lectures"
+            android:label="@string/title_activity_request_lectures"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".prof_lectures"
+            android:label="@string/title_activity_prof_lectures"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

@@ -14,42 +14,51 @@ import java.net.*;
 import java.util.Scanner;
 
 
-class CreateClassThread extends AsyncTask<String, Void, String> {
-    MainActivity m;
-    String email;
-    String name;
-    CreateClassThread(MainActivity m,String email,String name)
+class GetLecturesDataThread extends AsyncTask<Integer, Void, String> {
+    prof_lectures m;
+    GetLecturesDataThread(prof_lectures m)
     {
         this.m=m;
-        this.email=email;
-        this.name=name;
     }
-    protected String doInBackground(String...params) {
+    protected String doInBackground(Integer...params) {
         PrintWriter out;
         Scanner in;
         Socket s;
+        int classid =(int)params[0];
         try {
             //s = new Socket("192.168.43.157",8082);
-
             s=new Socket();
             s.connect(new InetSocketAddress("192.168.43.157",8082),4000); // alaa server
             //s.connect(new InetSocketAddress("192.168.1.66",8082),4000); // mohamad server
             in =new Scanner(s.getInputStream());
             out = new PrintWriter(s.getOutputStream(),true);
-            out.println("addClass--#--"+email+"--#--"+name);
-            String r=in.nextLine();
-            //DatagramSocket D = new DatagramSocket();
-            //byte[] b ="hello".getBytes();
-            //InetAddress ip = InetAddress.getByName("192.168.43.153");
-            //DatagramPacket p;
-            //p=new DatagramPacket(b,b.length,ip,8082);
-            //D.send(p);
-            return r;
+
+            out.println("GetLectures--#--"+classid);
+
+            String more=in.nextLine();
+            int nb=0;
+
+            while(true) {
+                if(more.equals(new String("end")))
+                    break;
+                nb++;
+                String date = in.nextLine();
+                String open= in.nextLine();
+                if(open.equals("1"))
+                    open="true";
+                else open="false";
+                int id=Integer.valueOf(in.nextLine());
+                m.db.addLecture(id,date,classid,open);
+                more=in.nextLine();
+
+            }
+            //m.refreshProfData(true);
+            return "done:"+nb;
         }
         catch (Exception e)
         {
             //error=e.getMessage();
-            return "failure:0";
+            return "failure";
         }
 
     }

@@ -6,6 +6,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Mohamad on 4/13/2017.
  */
@@ -16,10 +19,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
 
     // Database Name
-    private static final String DATABASE_NAME = "";
+    private static final String DATABASE_NAME = "dataBase";
 
     // Class table name
-    private static final String CLASS_TABLE = "";
+    private static final String CLASS_TABLE = "MyClass";
 
     // Class table columns names
     private static final String KEY_ID = "id";
@@ -35,7 +38,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String create_class_table = "crate table" + CLASS_TABLE + " ( " + KEY_ID + " integer primary key, " + KEY_NAME + " text, " + KEY_EMAIL_PROF +" text, " + KEY_LOCATION + " text )";
+        String create_class_table = "create table MyClass ( " + KEY_ID + " text primary key, " + KEY_NAME + " text, " + KEY_EMAIL_PROF +" text, " + KEY_LOCATION + " text )";
+        sqLiteDatabase.execSQL(create_class_table);
+        create_class_table="create table Lectures ( id int primary key, date text, classId int, open text)";
         sqLiteDatabase.execSQL(create_class_table);
     }
 
@@ -47,6 +52,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     void addClass(Class c) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values  = new ContentValues();
+        values.put(KEY_ID,c.getId());
         values.put(KEY_NAME, c.getName());
         values.put(KEY_EMAIL_PROF, c.getEmail());
         values.put(KEY_LOCATION, c.getLocation());
@@ -55,7 +61,24 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.insert(CLASS_TABLE, null, values);
         db.close();
     }
-
+    void addLecture(int id,String date,int classid,String open)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values  = new ContentValues();
+        values.put("id",id);
+        values.put("date",date);
+        values.put("classId",classid);
+        values.put("open",open);
+        db.insert("Lectures", null, values);
+        db.close();
+    }
+    public void setlecture(String bool,int id)
+    {
+        SQLiteDatabase db=this.getWritableDatabase();
+        ContentValues v=new ContentValues();
+        v.put("open",bool);
+        db.update("Lectures",v,"id="+id,null);
+    }
     Class getClass(int id){
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -68,4 +91,56 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         return null;
     }
+    public ArrayList<Class> getAllclass()
+    {
+        SQLiteDatabase db=this.getReadableDatabase();
+        String query="select * from MyClass";
+        Cursor c=db.rawQuery(query,null);
+        ArrayList<Class> con=new ArrayList<Class>();
+        int nb=0;
+        if(c.moveToFirst())
+        {
+            do
+            {
+                Class c1=new Class(c.getString(1),c.getString(0));
+                con.add(c1);
+            }while(c.moveToNext());
+        }
+        db.close();
+        return con;
+    }
+    public void deleteLecture(int id)
+    {
+        SQLiteDatabase db=this.getWritableDatabase();
+        db.delete("Lectures","id="+id,null);
+    }
+    public void deleteClass(int id)
+    {
+        SQLiteDatabase db=this.getWritableDatabase();
+        db.delete("Lectures","classId="+id,null);
+        db.delete("MyClass","id="+id,null);
+    }
+    public ArrayList<Lecture> getLectures(int classId)
+    {
+        String id=Integer.toString(classId);
+        SQLiteDatabase db=this.getReadableDatabase();
+        String query="select * from Lectures where classid='"+id+"'";
+        Cursor c=db.rawQuery(query,null);
+        int nb=1;
+        ArrayList<Lecture> con=new ArrayList<Lecture>();
+        if(c.moveToFirst())
+        {
+            do
+            {
+                boolean b=(c.getString(3).equals(new String("true")));
+                Lecture l1=new Lecture(c.getString(1),b,nb,c.getInt(0),c.getInt(2));
+                con.add(l1);
+                nb++;
+
+            }while(c.moveToNext());
+        }
+        db.close();
+        return con;
+    }
+
 }

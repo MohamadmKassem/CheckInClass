@@ -14,15 +14,17 @@ import java.net.*;
 import java.util.Scanner;
 
 
-class CreateClassThread extends AsyncTask<String, Void, String> {
-    MainActivity m;
-    String email;
-    String name;
-    CreateClassThread(MainActivity m,String email,String name)
+class OpenCloseLectureThread extends AsyncTask<String, Void, String> {
+    prof_lectures m;
+    int id;
+    String open;
+    int time;
+    OpenCloseLectureThread(prof_lectures m,int id,String open,int time)
     {
+        this.time=time;
         this.m=m;
-        this.email=email;
-        this.name=name;
+        this.id=id;
+        this.open=open;
     }
     protected String doInBackground(String...params) {
         PrintWriter out;
@@ -36,7 +38,7 @@ class CreateClassThread extends AsyncTask<String, Void, String> {
             //s.connect(new InetSocketAddress("192.168.1.66",8082),4000); // mohamad server
             in =new Scanner(s.getInputStream());
             out = new PrintWriter(s.getOutputStream(),true);
-            out.println("addClass--#--"+email+"--#--"+name);
+            out.println("changeLecture--#--"+id+"--#--"+open);
             String r=in.nextLine();
             //DatagramSocket D = new DatagramSocket();
             //byte[] b ="hello".getBytes();

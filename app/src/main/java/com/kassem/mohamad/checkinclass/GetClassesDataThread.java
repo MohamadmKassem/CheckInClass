@@ -14,42 +14,46 @@ import java.net.*;
 import java.util.Scanner;
 
 
-class CreateClassThread extends AsyncTask<String, Void, String> {
+class GetClassesDataThread extends AsyncTask<String, Void, String> {
     MainActivity m;
-    String email;
-    String name;
-    CreateClassThread(MainActivity m,String email,String name)
+    GetClassesDataThread(MainActivity m)
     {
         this.m=m;
-        this.email=email;
-        this.name=name;
     }
     protected String doInBackground(String...params) {
         PrintWriter out;
         Scanner in;
         Socket s;
+        String email=params[0];
         try {
             //s = new Socket("192.168.43.157",8082);
-
             s=new Socket();
             s.connect(new InetSocketAddress("192.168.43.157",8082),4000); // alaa server
             //s.connect(new InetSocketAddress("192.168.1.66",8082),4000); // mohamad server
             in =new Scanner(s.getInputStream());
             out = new PrintWriter(s.getOutputStream(),true);
-            out.println("addClass--#--"+email+"--#--"+name);
-            String r=in.nextLine();
-            //DatagramSocket D = new DatagramSocket();
-            //byte[] b ="hello".getBytes();
-            //InetAddress ip = InetAddress.getByName("192.168.43.153");
-            //DatagramPacket p;
-            //p=new DatagramPacket(b,b.length,ip,8082);
-            //D.send(p);
-            return r;
+            out.println("GetClasses--#--"+email);
+            String more=in.nextLine();
+            int nb=0;
+            while(true) {
+                if(more.equals(new String("end")))
+                    break;
+                nb++;
+                String name = in.nextLine();
+                String id = in.nextLine();
+                String location = in.nextLine();
+                Class C=new Class(name,id,email,location);
+                m.db.addClass(C);
+                more=in.nextLine();
+
+            }
+            //m.refreshProfData(true);
+            return "done:"+nb;
         }
         catch (Exception e)
         {
             //error=e.getMessage();
-            return "failure:0";
+            return "failure";
         }
 
     }

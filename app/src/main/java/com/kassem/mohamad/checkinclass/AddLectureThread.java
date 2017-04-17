@@ -14,15 +14,16 @@ import java.net.*;
 import java.util.Scanner;
 
 
-class CreateClassThread extends AsyncTask<String, Void, String> {
-    MainActivity m;
-    String email;
-    String name;
-    CreateClassThread(MainActivity m,String email,String name)
+class AddLectureThread extends AsyncTask<String, Void, String> {
+    prof_lectures m;
+    int id;
+    String date;
+    AddLectureThread(prof_lectures m,String id,String date)
     {
+        this.date=date;
         this.m=m;
-        this.email=email;
-        this.name=name;
+        try{this.id=Integer.parseInt(id);}
+        catch(Exception e){this.id=0;}
     }
     protected String doInBackground(String...params) {
         PrintWriter out;
@@ -36,7 +37,7 @@ class CreateClassThread extends AsyncTask<String, Void, String> {
             //s.connect(new InetSocketAddress("192.168.1.66",8082),4000); // mohamad server
             in =new Scanner(s.getInputStream());
             out = new PrintWriter(s.getOutputStream(),true);
-            out.println("addClass--#--"+email+"--#--"+name);
+            out.println("addLecture--#--"+id+"--#--"+date);
             String r=in.nextLine();
             //DatagramSocket D = new DatagramSocket();
             //byte[] b ="hello".getBytes();
@@ -49,12 +50,12 @@ class CreateClassThread extends AsyncTask<String, Void, String> {
         catch (Exception e)
         {
             //error=e.getMessage();
-            return "failure:0";
+            return "";
         }
 
     }
     protected void onPostExecute(String r) {
         super.onPostExecute(r);
-        if(r!="")m.result=r;
+        if(r!="") m.result=r;
     }
 }

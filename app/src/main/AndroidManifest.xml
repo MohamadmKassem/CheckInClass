@@ -5,6 +5,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
         android:allowBackup="true"
@@ -36,13 +39,10 @@
             android:label="@string/title_activity_student_of_lectures"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".request_lectures"
-            android:label="@string/title_activity_request_lectures"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".prof_lectures"
             android:label="@string/title_activity_prof_lectures"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".request_lectures"></activity>
     </application>
 
 </manifest>

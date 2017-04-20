@@ -91,10 +91,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         return null;
     }
-    public ArrayList<Class> getAllclass()
+    public ArrayList<Class> getAllclass(String email)
     {
         SQLiteDatabase db=this.getReadableDatabase();
-        String query="select * from MyClass";
+        String query="select * from MyClass where emailprof='"+email+"'";
         Cursor c=db.rawQuery(query,null);
         ArrayList<Class> con=new ArrayList<Class>();
         int nb=0;

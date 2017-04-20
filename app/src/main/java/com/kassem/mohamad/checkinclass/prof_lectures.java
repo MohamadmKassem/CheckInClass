@@ -1,12 +1,21 @@
 package com.kassem.mohamad.checkinclass;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -25,6 +34,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,19 +52,51 @@ public class prof_lectures extends AppCompatActivity {
     String result;
     LecturesAdapter lectureAdapter;
     ArrayList<Lecture> createdLectures;
+    String loc;
+    final LocationListener locationListener=new MyLocationListener(this);
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_prof_lectures);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         Intent I=getIntent();
         classId=I.getStringExtra("ClassId");
         //Toast.makeText(this, classId, Toast.LENGTH_SHORT).show();
         db=new DatabaseHandler(this);
         m=this;
+        loc="";
 
+        LocationManager manager = (LocationManager) getSystemService(getApplicationContext().LOCATION_SERVICE);
+        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+        {
+            startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+            this.finish();
+        }
+        else
+        {
+            LocationListener locationListener = new MyLocationListener(this);
+            int i=reqpermission();
+            try
+            {
+                manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0,0, locationListener);
+                Toast.makeText(getApplicationContext(), "use gps", Toast.LENGTH_LONG).show();
+            }
+            catch(SecurityException e)
+            {
+                Toast.makeText(getApplicationContext(), "cannot use gps", Toast.LENGTH_LONG).show();
+                this.finish();
+
+            }
+        }
+
+        //LocationListener locationListener = new MyLocationListener(this);
+        //WifiManager manager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        //WifiInfo info = manager.getConnectionInfo();
+        //String address = info.getMacAddress();
+        //Toast.makeText(getApplicationContext(), address, Toast.LENGTH_SHORT).show();
         refreshLectures(false);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -272,10 +314,10 @@ public class prof_lectures extends AppCompatActivity {
                     c.setClickable(false);
                     int id=(int)c.getTag();
                     if(!c.isChecked())
-                        changeLectureState(id,v,0);
+                        changeLectureState(id,v,0,0);
                     if(c.isChecked())
                     {
-                        AlertDialog diaBox = AskOption2(id,v);
+                        AlertDialog diaBox = AskOption1(id,v);
                         Window window = diaBox.getWindow();
                         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
                                 WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
@@ -310,39 +352,98 @@ public class prof_lectures extends AppCompatActivity {
             return view1;
         }
     }
-    private AlertDialog AskOption2(int id,View v)
+
+    private AlertDialog AskOption1(int id,View v)
     {
         final int i=id;
         final Switch a=(Switch) v;
-
+       // final int distance=d;
         final Spinner input =new Spinner(this);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT ,LinearLayout.LayoutParams.WRAP_CONTENT);
         String array_spinner[]=new String[5];
-        array_spinner[0]="2";
-        array_spinner[1]="4";
-        array_spinner[2]="8";
-        array_spinner[3]="15";
-        array_spinner[4]="30";
+        array_spinner[0]="2 metrr";
+        array_spinner[1]="5 metre";
+        array_spinner[2]="10 metre";
+        array_spinner[3]="20 metre";
+        array_spinner[4]="40 metre";
         ArrayAdapter adapter = new ArrayAdapter(this,
                 android.R.layout.simple_spinner_item, array_spinner);
         input.setAdapter(adapter);
         input.setLayoutParams(lp);
+        AlertDialog myopenDialogBox =new AlertDialog.Builder(this)
+                //set message, title, and icon
+                .setTitle("open lecture")
+                .setMessage("choose distance")
+                .setPositiveButton("next", new DialogInterface.OnClickListener() {
 
+                    public void onClick(final DialogInterface dialog, int whichButton) {
+                        String s = input.getSelectedItem().toString().split(" ")[0];
+                        int distance = Integer.valueOf(s);
+                        AlertDialog diaBox = AskOption2(i,a,distance);
+                        Window window = diaBox.getWindow();
+                        window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
+                                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
+                        window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+                        diaBox.setOnCancelListener(new DialogInterface.OnCancelListener()
+                        {
+                            @Override
+                            public void onCancel(DialogInterface dialog)
+                            {
+                                if(a.isChecked())a.setChecked(false);
+                                else a.setChecked(true);
+                                a.setClickable(true);
+                            }
+                        });
+                        diaBox.show();
+                    }
+                })
+                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        a.setClickable(true);
+                        if(a.isChecked())a.setChecked(false);
+                        else a.setChecked(true);
+                        dialog.dismiss();
+
+
+                    }
+                })
+
+                .create();
+
+        myopenDialogBox.setView(input);
+        return myopenDialogBox;
+
+    }
+    private AlertDialog AskOption2(int id,View v,int d)
+    {
+        final int i=id;
+        final Switch a=(Switch) v;
+        final int distance=d;
+        final Spinner input =new Spinner(this);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT ,LinearLayout.LayoutParams.WRAP_CONTENT);
+        String array_spinner[]=new String[5];
+        array_spinner[0]="2 minutes";
+        array_spinner[1]="4 minutes";
+        array_spinner[2]="8 minutes";
+        array_spinner[3]="15 minutes";
+        array_spinner[4]="30 minutes";
+        ArrayAdapter adapter = new ArrayAdapter(this,
+                android.R.layout.simple_spinner_item, array_spinner);
+        input.setAdapter(adapter);
+        input.setLayoutParams(lp);
         AlertDialog myopenDialogBox =new AlertDialog.Builder(this)
                 //set message, title, and icon
                 .setTitle("open lecture")
                 .setMessage("sure you want open this lecture")
-
-
                 .setPositiveButton("open", new DialogInterface.OnClickListener() {
 
                     public void onClick(final DialogInterface dialog, int whichButton) {
 
-                        String s = input.getSelectedItem().toString();
+                        String s = input.getSelectedItem().toString().split(" ")[0];
                         //String[] d = s.split(" ");
                         int m = Integer.valueOf(s);
 
-                        changeLectureState(i, a, m);
+                        changeLectureState(i, a, m,distance);
 
                         Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
 
@@ -365,44 +466,67 @@ public class prof_lectures extends AppCompatActivity {
         return myopenDialogBox;
 
     }
-    public void changeLectureState(int id,View v,int time)
+    public void changeLectureState(int id,View v,int time,int d)
     {
-        result="";
-        final int i=id;
-        final Switch s=(Switch)v;
-        final int minute=time;
-        final ProgressDialog progressDialog = new ProgressDialog(prof_lectures.this, R.style.AppTheme_Dark_Dialog);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("changing lecture state ...");
-        progressDialog.show();
-        String open="false";
-        if(s.isChecked())
-            open="true";
-        OpenCloseLectureThread O=new OpenCloseLectureThread(this,i,open,time);
-        O.execute();
-        new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run()
-                    {
-                        if(result.equals("done"))
-                        {
-                            if(s.isChecked())
-                            {
-                                db.setlecture("true", i);
-                                closingAfterTimeThread cAt=new closingAfterTimeThread(minute,db,i);
-                                cAt.start();
-                            }
-                            else db.setlecture("false",i);
-                        }
-                        else{
-                            if(s.isChecked())
-                                s.setChecked(false);
-                            else s.setChecked(true);
-                            Toast.makeText(getApplicationContext(),"no connection", Toast.LENGTH_SHORT).show();}
-                        progressDialog.dismiss();
-                        s.setClickable(true);
-                    }
-                }, 3000);
+         result="";
+         final int distance=d;
+         final int i=id;
+         final Switch s=(Switch)v;
+         final int minute=time;
+         String open="false";
+         if(s.isChecked())
+         {
+             open = "true";
+         }
+         final ProgressDialog progressDialog = new ProgressDialog(prof_lectures.this, R.style.AppTheme_Dark_Dialog);
+         progressDialog.setIndeterminate(true);
+         progressDialog.setMessage("changing lecture state ...");
+         progressDialog.show();
+         OpenCloseLectureThread O=new OpenCloseLectureThread(this,i,open,time,loc);
+         O.execute();
+         new android.os.Handler().postDelayed(
+                 new Runnable()
+                 {
+                     public void run()
+                     {
+                         if(result.equals("done"))
+                         {
+                                        if(s.isChecked())
+                                        {
+                                            db.setlecture("true", i);
+                                            closingAfterTimeThread cAt=new closingAfterTimeThread(minute,db,i);
+                                            cAt.start();
+                                        }
+                                        else db.setlecture("false",i);
+                         }
+                         else
+                         {
+                             if(s.isChecked())
+                                 s.setChecked(false);
+                             else
+                                 s.setChecked(true);
+                             Toast.makeText(getApplicationContext(),"no connection", Toast.LENGTH_SHORT).show();
+                         }
+                         progressDialog.dismiss();
+                         s.setClickable(true);
+                     }
+                 }, 3000);
+        Toast.makeText(getApplicationContext(), loc, Toast.LENGTH_LONG).show();
+    }
+
+
+
+
+    public int reqpermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                Toast.makeText(getApplicationContext(), "You should accept", Toast.LENGTH_LONG).show();
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1340);
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1340);
+            }
+        }
+        return 1;
     }
 
 }

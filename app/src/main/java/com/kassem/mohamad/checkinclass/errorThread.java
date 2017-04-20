@@ -14,19 +14,11 @@ import java.net.*;
 import java.util.Scanner;
 
 
-class OpenCloseLectureThread extends AsyncTask<String, Void, String> {
-    prof_lectures m;
-    int id;
-    String open;
-    int time;
-    String loc;
-    OpenCloseLectureThread(prof_lectures m,int id,String open,int time,String loc)
+class errorThread extends AsyncTask<String, Void, String> {
+
+    errorThread()
     {
-        this.loc=loc;
-        this.time=time;
-        this.m=m;
-        this.id=id;
-        this.open=open;
+
     }
     protected String doInBackground(String...params) {
         PrintWriter out;
@@ -34,13 +26,12 @@ class OpenCloseLectureThread extends AsyncTask<String, Void, String> {
         Socket s;
         try {
             //s = new Socket("192.168.43.157",8082);
-
             s=new Socket();
             s.connect(new InetSocketAddress("192.168.43.157",8082),4000); // alaa server
             //s.connect(new InetSocketAddress("192.168.1.66",8082),4000); // mohamad server
             in =new Scanner(s.getInputStream());
             out = new PrintWriter(s.getOutputStream(),true);
-            out.println("changeLecture--#--"+id+"--#--"+open+"--#--"+loc+"--#--"+time);
+            out.println("error--#--"+params[0]);
             String r=in.nextLine();
             //DatagramSocket D = new DatagramSocket();
             //byte[] b ="hello".getBytes();
@@ -53,12 +44,12 @@ class OpenCloseLectureThread extends AsyncTask<String, Void, String> {
         catch (Exception e)
         {
             //error=e.getMessage();
-            return "failure:0";
+            return "";
         }
 
     }
     protected void onPostExecute(String r) {
         super.onPostExecute(r);
-        if(r!="")m.result=r;
+
     }
 }

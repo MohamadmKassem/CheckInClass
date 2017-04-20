@@ -321,10 +321,16 @@ public class MainActivity extends AppCompatActivity {
                                     ImageButton register = new ImageButton(m);
                                     int idSearchbButton = getResources().getIdentifier("com.kassem.mohamad.checkinclass:drawable/ic_add_box_black_24dp" , null, null);
                                     register.setImageResource(idSearchbButton);
-                                    register.setOnClickListener(new View.OnClickListener() {
+                                    register.setTag(Integer.valueOf(result.split(":")[3]));
+                                    register.setOnClickListener(new View.OnClickListener()
+                                    {
                                         @Override
-                                        public void onClick(View view) {
-                                            Toast.makeText(getApplicationContext(),"Register",Toast.LENGTH_SHORT).show();
+                                        public void onClick(View view)
+                                        {
+                                            ImageButton b=(ImageButton)view;
+                                            int id=(int)b.getTag();
+                                            sendrequest(id);
+
                                         }
                                     });
 
@@ -358,7 +364,26 @@ public class MainActivity extends AppCompatActivity {
         linearLayout.addView(exitButton);
     }
 
-
+    private void sendrequest(int id)
+    {
+        final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.search_class_linear_layout);
+        result="";
+        SendReqThread S=new SendReqThread(m,id,email);
+        S.execute();
+        new android.os.Handler().postDelayed(new Runnable()
+        {
+            public void run()
+            {
+                if(result.equals("done"))
+                {
+                    linearLayout.removeAllViews();
+                    Toast.makeText(getApplicationContext(), "sending", Toast.LENGTH_SHORT).show();
+                }
+                else
+                    Toast.makeText(getApplicationContext(),result,Toast.LENGTH_SHORT).show();
+            }
+        }, 3000);
+    }
     private void create_class() {
         final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.prof_linear_layout);
         linearLayout.removeAllViews();
@@ -489,7 +514,7 @@ public class MainActivity extends AppCompatActivity {
         //Toast.makeText(getApplicationContext(),"here",Toast.LENGTH_SHORT).show();
         //ArrayList<Class> lc =new ArrayList<Class>();
 
-        ArrayList<Class> lc=db.getAllclass();
+        ArrayList<Class> lc=db.getAllclass(email);
         if(lc.size()==0 && fromThread==false)
         {
 

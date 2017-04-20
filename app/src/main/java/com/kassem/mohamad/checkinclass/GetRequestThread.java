@@ -14,19 +14,12 @@ import java.net.*;
 import java.util.Scanner;
 
 
-class OpenCloseLectureThread extends AsyncTask<String, Void, String> {
-    prof_lectures m;
-    int id;
-    String open;
-    int time;
-    String loc;
-    OpenCloseLectureThread(prof_lectures m,int id,String open,int time,String loc)
-    {
-        this.loc=loc;
-        this.time=time;
-        this.m=m;
+class GetRequestThread extends AsyncTask<String, Void, String> {
+    request_lectures m;
+    String id;
+    GetRequestThread(request_lectures m,String id) {
+        this.m = m;
         this.id=id;
-        this.open=open;
     }
     protected String doInBackground(String...params) {
         PrintWriter out;
@@ -40,25 +33,31 @@ class OpenCloseLectureThread extends AsyncTask<String, Void, String> {
             //s.connect(new InetSocketAddress("192.168.1.66",8082),4000); // mohamad server
             in =new Scanner(s.getInputStream());
             out = new PrintWriter(s.getOutputStream(),true);
-            out.println("changeLecture--#--"+id+"--#--"+open+"--#--"+loc+"--#--"+time);
-            String r=in.nextLine();
-            //DatagramSocket D = new DatagramSocket();
-            //byte[] b ="hello".getBytes();
-            //InetAddress ip = InetAddress.getByName("192.168.43.153");
-            //DatagramPacket p;
-            //p=new DatagramPacket(b,b.length,ip,8082);
-            //D.send(p);
-            return r;
+            out.println("getRequest--#--"+id);
+
+            String more=in.nextLine();
+            int nb=0;
+            while(true) {
+                if(more.equals(new String("end")))
+                    break;
+                nb++;
+                String fullname = in.nextLine();
+                String email= in.nextLine();
+                Student S=new Student(fullname,email);
+                m.AlS.add(S);
+                more=in.nextLine();
+            }
+
+            return "done:"+nb;
         }
         catch (Exception e)
         {
-            //error=e.getMessage();
-            return "failure:0";
+            return "no connection";
         }
 
     }
     protected void onPostExecute(String r) {
         super.onPostExecute(r);
-        if(r!="")m.result=r;
+        if(r!="") m.result=r;
     }
 }

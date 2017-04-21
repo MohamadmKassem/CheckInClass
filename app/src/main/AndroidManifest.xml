@@ -42,7 +42,8 @@
             android:name=".prof_lectures"
             android:label="@string/title_activity_prof_lectures"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".request_lectures"></activity>
+        <activity android:name=".request_lectures" />
+        <activity android:name=".SpeceficStudentClass"></activity>
     </application>
 
 </manifest>

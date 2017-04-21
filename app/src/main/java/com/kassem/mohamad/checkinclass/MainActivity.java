@@ -67,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
     private boolean isFirstOpenStudentTab = true;
     private boolean isFirstOpenProftTab = true;
 
-
     ClassesAdapter classesAdapter;
     ArrayList<Class> createdClasses;
 
@@ -108,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
                 if(position == 0){
-
+                    refreshStudentTab();
                 }
                 else if(position == 1){
                     if(isFirstOpenProftTab){
@@ -518,8 +517,8 @@ public class MainActivity extends AppCompatActivity {
         if(lc.size()==0 && fromThread==false)
         {
 
-            GetClassesDataThread gd=new GetClassesDataThread(this);
-            gd.execute(email);
+            GetClassesDataThread gd=new GetClassesDataThread(this,null);
+            gd.execute(email,"profClasses");
             new android.os.Handler().postDelayed(
                     new Runnable() {
                         public void run()
@@ -590,6 +589,46 @@ public class MainActivity extends AppCompatActivity {
             return view1;
         }
     }
+    public void refreshStudentTab() {
+        //Toast.makeText(getApplicationContext(),"here",Toast.LENGTH_SHORT).show();
+            //final ArrayList<Class> lc2 =new ArrayList<Class>();
+            result="";
+            final ArrayList<Class> lc2=new ArrayList<Class>();
+            GetClassesDataThread gd=new GetClassesDataThread(this,lc2);
+            gd.execute(email,"studentClasses");
+            new android.os.Handler().postDelayed(
+                    new Runnable() {
+                        public void run()
+                        {
+                            if(!result.equals("done:0") && !result.equals("failure"))
+                            {
+                                if(lc2.size()!=0) {
+                                    classesAdapter = new ClassesAdapter(lc2);
+                                    ListView classesListView = (ListView) findViewById(R.id.Student_class_linear_layout);
+                                    classesListView.setAdapter(classesAdapter);
+                                    classesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                        @Override
+                                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                            TextView className = (TextView) view.findViewById(R.id.classname);
+                                            TextView classid = (TextView) view.findViewById(R.id.classid);
+                                            Intent I = new Intent(m, SpeceficStudentClass.class);
+                                            I.putExtra("ClassName", className.getText().toString());
+                                            I.putExtra("ClassId", classid.getText().toString());
+                                            startActivity(I);
 
+                                        }
+                                    });
+                                }
+                            }
+                            else if(result.equals("done:0"))
+                                Toast.makeText(getApplicationContext(),"no classes yet",Toast.LENGTH_SHORT).show();
+                            else Toast.makeText(getApplicationContext(),"no connection",Toast.LENGTH_SHORT).show();
+                        }
+                    }, 3500);
 
+        }
 }
+
+
+
+

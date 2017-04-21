@@ -16,7 +16,13 @@
         android:orientation="horizontal">
 
     </LinearLayout>
+    <ListView
+        android:id="@+id/Student_class_linear_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
+    </ListView>
 
 
 

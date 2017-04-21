@@ -11,14 +11,17 @@ import android.widget.Toast;
 
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 
 class GetClassesDataThread extends AsyncTask<String, Void, String> {
     MainActivity m;
-    GetClassesDataThread(MainActivity m)
+    ArrayList<Class> lc2;
+    GetClassesDataThread(MainActivity m, ArrayList<Class> lc)
     {
         this.m=m;
+        lc2=lc;
     }
     protected String doInBackground(String...params) {
         PrintWriter out;
@@ -32,7 +35,7 @@ class GetClassesDataThread extends AsyncTask<String, Void, String> {
             //s.connect(new InetSocketAddress("192.168.1.66",8082),4000); // mohamad server
             in =new Scanner(s.getInputStream());
             out = new PrintWriter(s.getOutputStream(),true);
-            out.println("GetClasses--#--"+email);
+            out.println(params[1]+"--#--"+email);
             String more=in.nextLine();
             int nb=0;
             while(true) {
@@ -43,7 +46,8 @@ class GetClassesDataThread extends AsyncTask<String, Void, String> {
                 String id = in.nextLine();
                 String location = in.nextLine();
                 Class C=new Class(name,id,email,location);
-                m.db.addClass(C);
+                if(params[1].equals("profClasses"))m.db.addClass(C);
+                else lc2.add(C);
                 more=in.nextLine();
 
             }

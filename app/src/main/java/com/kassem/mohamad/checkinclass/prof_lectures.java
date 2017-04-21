@@ -81,7 +81,7 @@ public class prof_lectures extends AppCompatActivity {
             int i=reqpermission();
             try
             {
-                manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0,0, locationListener);
+                manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 50,0, locationListener);
                 Toast.makeText(getApplicationContext(), "use gps", Toast.LENGTH_LONG).show();
             }
             catch(SecurityException e)

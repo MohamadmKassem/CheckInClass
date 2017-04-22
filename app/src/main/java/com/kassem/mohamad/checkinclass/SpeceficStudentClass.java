@@ -157,7 +157,9 @@ public class SpeceficStudentClass extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
                             //Toast.makeText(getApplicationContext(),"send presence...not real",Toast.LENGTH_SHORT).show();
+
                             ImageView i=(ImageView)v;
+                            i.setClickable(false);
                             result="";
                             SendPresenceThread ST=new SendPresenceThread(m,loc,email,(int)i.getTag());
                             ST.execute();
@@ -167,7 +169,11 @@ public class SpeceficStudentClass extends AppCompatActivity {
                                         {
                                             if(result.equals("done"))
                                                 refreshStudentTab();
-                                            else Toast.makeText(getApplication(),result,Toast.LENGTH_SHORT).show();
+                                            else {
+
+                                                Toast.makeText(getApplication(),result,Toast.LENGTH_SHORT).show();
+                                                refreshStudentTab();
+                                            }
                                         }
                                     }, 3500);
                         }

@@ -30,7 +30,8 @@ class deleteLectureThread extends AsyncTask<String, Void, String> {
             //s = new Socket("192.168.43.157",8082);
 
             s=new Socket();
-            s.connect(new InetSocketAddress("192.168.43.157",8082),4000); // alaa server
+           // s.connect(new InetSocketAddress("192.168.43.157",8082),4000); // alaa server
+            s.connect(new InetSocketAddress("192.168.0.100",8082),4000); //alaa server by wifi
             //s.connect(new InetSocketAddress("192.168.1.66",8082),4000); // mohamad server
             in =new Scanner(s.getInputStream());
             out = new PrintWriter(s.getOutputStream(),true);

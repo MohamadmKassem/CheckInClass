@@ -35,19 +35,49 @@ class SendPresenceThread extends AsyncTask<String, Void, String> {
             //s = new Socket("192.168.43.157",8082);
 
             s=new Socket();
-            s.connect(new InetSocketAddress("192.168.43.157",8082),4000); // alaa server
+            //s.connect(new InetSocketAddress("192.168.43.157",8082),4000); // alaa server
+            s.connect(new InetSocketAddress("192.168.0.100",8082),4000); //alaa server by wifi
             //s.connect(new InetSocketAddress("192.168.1.66",8082),4000); // mohamad server
             in =new Scanner(s.getInputStream());
             out = new PrintWriter(s.getOutputStream(),true);
             out.println("Presence--#--"+id+"--#--"+email+"--#--"+loc);
             String r=in.nextLine();
+            if(r.equals("cannot add presence"))
+                return"cannot add presence";
+            else
+            {
+                String[] data=new String[3];
+                data=r.split("--#--");
+
+                Location profLoc=new Location("prof");
+                profLoc.setAltitude(Double.parseDouble(data[1].split("//")[0]));
+                profLoc.setLongitude(Double.parseDouble(data[1].split("//")[1]));
+
+                Location stdloc=new Location("student");
+                stdloc.setAltitude(Double.parseDouble(loc.split("//")[0]));
+                stdloc.setLongitude(Double.parseDouble(loc.split("//")[1]));
+
+                float dis=profLoc.distanceTo(stdloc);
+                if(dis>Integer.valueOf(data[2]))
+                {
+                    out.println("fail");
+                    return "cannot add presence "+dis;
+                }
+                else{
+                    out.println("add");
+                    if(in.nextLine().equals("done"))
+                        return "done "+dis ;
+                    else
+                        return "cannot add presence";
+                }
+            }
             //DatagramSocket D = new DatagramSocket();
             //byte[] b ="hello".getBytes();
             //InetAddress ip = InetAddress.getByName("192.168.43.153");
             //DatagramPacket p;
             //p=new DatagramPacket(b,b.length,ip,8082);
             //D.send(p);
-            return r;
+
         }
         catch (Exception e)
         {

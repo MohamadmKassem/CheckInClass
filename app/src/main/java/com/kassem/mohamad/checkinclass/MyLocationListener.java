@@ -27,6 +27,7 @@ public class MyLocationListener implements LocationListener {
     @Override
     public void onLocationChanged(Location location) {
         //a.loc=location.toString();
+       // location.dis
         a.loc=""+location.getAltitude()+"//";
         a.loc+=location.getLongitude();
     }

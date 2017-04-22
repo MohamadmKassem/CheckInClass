@@ -77,7 +77,7 @@ public class prof_lectures extends AppCompatActivity {
         }
         else
         {
-            LocationListener locationListener = new MyLocationListener(this);
+            //LocationListener locationListener = new MyLocationListener(this);
             int i=reqpermission();
             try
             {
@@ -482,7 +482,7 @@ public class prof_lectures extends AppCompatActivity {
          progressDialog.setIndeterminate(true);
          progressDialog.setMessage("changing lecture state ...");
          progressDialog.show();
-         OpenCloseLectureThread O=new OpenCloseLectureThread(this,i,open,time,loc);
+         OpenCloseLectureThread O=new OpenCloseLectureThread(this,i,open,time,loc,d);
          O.execute();
          new android.os.Handler().postDelayed(
                  new Runnable()

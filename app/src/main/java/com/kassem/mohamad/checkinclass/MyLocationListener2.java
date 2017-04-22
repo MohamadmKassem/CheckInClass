@@ -17,16 +17,15 @@ import android.os.Bundle;
  * Created by ALAA on 15/3/2017.
  */
 
-public class MyLocationListener implements LocationListener {
+public class MyLocationListener2 implements LocationListener {
 
-    prof_lectures a;
-    public MyLocationListener(prof_lectures a)
+    SpeceficStudentClass a;
+    public MyLocationListener2(SpeceficStudentClass a)
     {
         this.a=a;
     }
     @Override
     public void onLocationChanged(Location location) {
-        //a.loc=location.toString();
         a.loc=""+location.getAltitude()+"//";
         a.loc+=location.getLongitude();
     }

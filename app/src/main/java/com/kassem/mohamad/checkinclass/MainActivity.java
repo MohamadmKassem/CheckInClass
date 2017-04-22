@@ -612,7 +612,7 @@ public class MainActivity extends AppCompatActivity {
                                             TextView className = (TextView) view.findViewById(R.id.classname);
                                             TextView classid = (TextView) view.findViewById(R.id.classid);
                                             Intent I = new Intent(m, SpeceficStudentClass.class);
-                                            I.putExtra("ClassName", className.getText().toString());
+                                            I.putExtra("email", email);
                                             I.putExtra("ClassId", classid.getText().toString());
                                             startActivity(I);
 

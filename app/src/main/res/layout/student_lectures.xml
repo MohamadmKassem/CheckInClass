@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+   <LinearLayout
+       android:orientation="horizontal"
+       android:id="@+id/LL2"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content">
+
+       <TextView
+        android:id="@+id/lectureNb"
+        android:layout_width="0dp"
+        android:layout_weight="2"
+        android:layout_height="wrap_content"
+        android:textSize="30dp"/>
+
+       <ImageView
+            android:id="@+id/img"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@id/lectureNb"
+            android:paddingLeft="50dp"/>
+    </LinearLayout>
+    <TextView
+        android:textSize="15dp"
+        android:id="@+id/lectureDate2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/LL2"/>
+
+</RelativeLayout>

@@ -5,6 +5,7 @@ package com.kassem.mohamad.checkinclass;
 
  */
 
+import android.location.Location;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
@@ -14,21 +15,17 @@ import java.net.*;
 import java.util.Scanner;
 
 
-class OpenCloseLectureThread extends AsyncTask<String, Void, String> {
-    prof_lectures m;
+class SendPresenceThread extends AsyncTask<String, Void, String> {
+    SpeceficStudentClass m;
     int id;
-    String open;
-    int time;
+    String email;
     String loc;
-    int distance;
-    OpenCloseLectureThread(prof_lectures m,int id,String open,int time,String loc,int d)
+    SendPresenceThread(SpeceficStudentClass m,String loc,String email,int lectId)
     {
-        this.distance=d;
-        this.loc=loc;
-        this.time=time;
+        this.email=email;
         this.m=m;
-        this.id=id;
-        this.open=open;
+        this.id=lectId;
+        this.loc=loc;
     }
     protected String doInBackground(String...params) {
         PrintWriter out;
@@ -36,17 +33,13 @@ class OpenCloseLectureThread extends AsyncTask<String, Void, String> {
         Socket s;
         try {
             //s = new Socket("192.168.43.157",8082);
-            while(m.loc=="")
-            {
 
-            }
-            loc=m.loc;
             s=new Socket();
-            s.connect(new InetSocketAddress("192.168.43.157",8082),1500); // alaa server
+            s.connect(new InetSocketAddress("192.168.43.157",8082),4000); // alaa server
             //s.connect(new InetSocketAddress("192.168.1.66",8082),4000); // mohamad server
             in =new Scanner(s.getInputStream());
             out = new PrintWriter(s.getOutputStream(),true);
-            out.println("changeLecture--#--"+id+"--#--"+open+"--#--"+loc+"--#--"+time+"--#--"+distance);
+            out.println("Presence--#--"+id+"--#--"+email+"--#--"+loc);
             String r=in.nextLine();
             //DatagramSocket D = new DatagramSocket();
             //byte[] b ="hello".getBytes();
@@ -59,7 +52,7 @@ class OpenCloseLectureThread extends AsyncTask<String, Void, String> {
         catch (Exception e)
         {
             //error=e.getMessage();
-            return "failure:0";
+            return "failure";
         }
 
     }

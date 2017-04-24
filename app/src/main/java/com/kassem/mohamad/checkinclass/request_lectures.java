@@ -40,7 +40,7 @@ public class request_lectures extends AppCompatActivity {
     public void GetData()
     {
         result="";
-        GetRequestThread GRT=new GetRequestThread(this,classid);
+        final GetRequestThread GRT=new GetRequestThread(this,classid);
         GRT.execute();
         new android.os.Handler().postDelayed(
                 new Runnable() {
@@ -52,6 +52,7 @@ public class request_lectures extends AppCompatActivity {
                         else if(result.equals("no connection"))
                             Toast.makeText(getApplicationContext(),"no connection",Toast.LENGTH_SHORT).show();
                         else RefreshData();
+                        GRT.cancel(true);
                     }
                 }, 2500);
     }
@@ -105,7 +106,7 @@ public class request_lectures extends AppCompatActivity {
                 public void onClick(View v) {
                     Button Btn1=(Button)v;
                     final String email=(String)Btn1.getTag();
-                    answerToReqThread a=new answerToReqThread(m);
+                    final answerToReqThread a=new answerToReqThread(m);
                     a.execute("DeleteReq--#--"+classid+"--#--"+email);
                     result="";
                     new android.os.Handler().postDelayed(
@@ -127,6 +128,7 @@ public class request_lectures extends AppCompatActivity {
                                     }
                                     else
                                         Toast.makeText(getApplicationContext(),"failed",Toast.LENGTH_SHORT).show();
+                                    a.cancel(true);
                                 }
                             }, 2500);
                 }
@@ -136,7 +138,7 @@ public class request_lectures extends AppCompatActivity {
                 public void onClick(View v) {
                     Button Btn1=(Button)v;
                     final String email=(String)Btn1.getTag();
-                    answerToReqThread a=new answerToReqThread(m);
+                    final answerToReqThread a=new answerToReqThread(m);
                     a.execute("AcceptReq--#--"+classid+"--#--"+email);
                     result="";
                     new android.os.Handler().postDelayed(
@@ -158,6 +160,7 @@ public class request_lectures extends AppCompatActivity {
                                     }
                                     else
                                         Toast.makeText(getApplicationContext(),"no connection",Toast.LENGTH_SHORT).show();
+                                    a.cancel(true);
                                 }
                             }, 2500);
                 }

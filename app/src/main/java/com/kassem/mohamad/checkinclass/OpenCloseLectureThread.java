@@ -54,6 +54,7 @@ class OpenCloseLectureThread extends AsyncTask<String, Void, String> {
             //InetAddress ip = InetAddress.getByName("192.168.43.153");
             //DatagramPacket p;
             //p=new DatagramPacket(b,b.length,ip,8082);
+            s.close();
             //D.send(p);
             return r;
         }

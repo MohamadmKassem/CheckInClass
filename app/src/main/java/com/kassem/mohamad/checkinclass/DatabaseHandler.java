@@ -42,11 +42,35 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(create_class_table);
         create_class_table="create table Lectures ( id int primary key, date text, classId int, open text)";
         sqLiteDatabase.execSQL(create_class_table);
+        create_class_table="create table Presence ( LectureId int , FullName text, Email text, here int)";
+        sqLiteDatabase.execSQL(create_class_table);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 
+    }
+    String updatePresence(int LectureId,ArrayList<presence>AP)
+    {
+        SQLiteDatabase db=this.getWritableDatabase();
+        db.delete("Presence","LectureId="+LectureId,null);
+        int i;
+        String test="db";
+        for(i=0;i<AP.size();i++)
+        {
+            ContentValues values  = new ContentValues();
+            values.put("LectureId", LectureId);
+            values.put("FullName", AP.get(i).fullname);
+            values.put("Email", AP.get(i).email);
+            int here=0;
+            if(AP.get(i).here)
+                here=1;
+            values.put("here",here);
+            db.insert("Presence", null, values);
+            test+="/"+i;
+        }
+        db.close();
+        return test;
     }
 
     void addClass(Class c) {
@@ -90,6 +114,23 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             return c;
         }
         return null;
+    }
+    public ArrayList<presence> getPresence(int LectureId)
+    {
+        SQLiteDatabase db=this.getReadableDatabase();
+        String query="select * from Presence where LectureId="+LectureId;
+        Cursor c=db.rawQuery(query,null);
+        ArrayList<presence> con=new ArrayList<presence>();
+        if(c.moveToFirst())
+        {
+            do
+            {
+                presence p=new presence(c.getString(1),c.getString(2),c.getInt(3)==1);
+                con.add(p);
+            }while(c.moveToNext());
+        }
+        db.close();
+        return con;
     }
     public ArrayList<Class> getAllclass(String email)
     {

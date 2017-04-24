@@ -65,6 +65,7 @@ class SendPresenceThread extends AsyncTask<String, Void, String> {
                 }
                 else{
                     out.println("add");
+                    out.println(dis);
                     if(in.nextLine().equals("done"))
                         return "done "+dis ;
                     else

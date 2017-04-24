@@ -74,7 +74,7 @@ public class SpeceficStudentClass extends AppCompatActivity {
         //final ArrayList<Class> lc2 =new ArrayList<Class>();
         result="";
         final ArrayList<StudentLecture> lc2=new ArrayList<StudentLecture>();
-        GetStudentLectureDataThread gd=new GetStudentLectureDataThread(this,lc2);
+        final GetStudentLectureDataThread gd=new GetStudentLectureDataThread(this,lc2);
         gd.execute(classid);
         new android.os.Handler().postDelayed(
                 new Runnable() {
@@ -86,23 +86,12 @@ public class SpeceficStudentClass extends AppCompatActivity {
                                 LectureAdapter LA= new LectureAdapter(lc2);
                                 ListView LectureListView = (ListView) findViewById(R.id.LV2);
                                 LectureListView.setAdapter(LA);
-                               /* LectureListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                    @Override
-                                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                                        TextView className = (TextView) view.findViewById(R.id.classname);
-                                        TextView classid = (TextView) view.findViewById(R.id.classid);
-                                        Intent I = new Intent(m, SpeceficStudentClass.class);
-                                        I.putExtra("ClassName", className.getText().toString());
-                                        I.putExtra("ClassId", classid.getText().toString());
-                                        startActivity(I);
-
-                                    }
-                                });*/
                             }
                         }
                         else if(result.equals("done:0"))
                             Toast.makeText(getApplicationContext(),"no classes yet",Toast.LENGTH_SHORT).show();
                         else Toast.makeText(getApplicationContext(),"no connection",Toast.LENGTH_SHORT).show();
+                        gd.cancel(true);
                     }
                 }, 3500);
 
@@ -161,7 +150,7 @@ public class SpeceficStudentClass extends AppCompatActivity {
                             ImageView i=(ImageView)v;
                             i.setClickable(false);
                             result="";
-                            SendPresenceThread ST=new SendPresenceThread(m,loc,email,(int)i.getTag());
+                            final SendPresenceThread ST=new SendPresenceThread(m,loc,email,(int)i.getTag());
                             ST.execute();
                             new android.os.Handler().postDelayed(
                                     new Runnable() {
@@ -174,6 +163,7 @@ public class SpeceficStudentClass extends AppCompatActivity {
                                                 Toast.makeText(getApplication(),result,Toast.LENGTH_SHORT).show();
                                                 refreshStudentTab();
                                             }
+                                            ST.cancel(true);
                                         }
                                     }, 3500);
                         }

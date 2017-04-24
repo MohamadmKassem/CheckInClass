@@ -300,7 +300,7 @@ public class MainActivity extends AppCompatActivity {
                 progressDialog.show();
 
                 result="";
-                AddClassThread a=new AddClassThread(m,id);
+                final AddClassThread a=new AddClassThread(m,id);
                 a.execute();
                 new android.os.Handler().postDelayed(
                         new Runnable() {
@@ -341,6 +341,7 @@ public class MainActivity extends AppCompatActivity {
                                     Toast.makeText(getApplicationContext(),"Search class failed",Toast.LENGTH_SHORT).show();
                                 }
                                 progressDialog.dismiss();
+                                a.cancel(true);
                             }
                         }, 5000);
                }
@@ -367,7 +368,7 @@ public class MainActivity extends AppCompatActivity {
     {
         final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.search_class_linear_layout);
         result="";
-        SendReqThread S=new SendReqThread(m,id,email);
+        final SendReqThread S=new SendReqThread(m,id,email);
         S.execute();
         new android.os.Handler().postDelayed(new Runnable()
         {
@@ -380,6 +381,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else
                     Toast.makeText(getApplicationContext(),result,Toast.LENGTH_SHORT).show();
+                S.cancel(true);
             }
         }, 3000);
     }
@@ -407,7 +409,7 @@ public class MainActivity extends AppCompatActivity {
 
                         result = "";
                         final boolean[] error = {false};
-                        CreateClassThread a = new CreateClassThread(m, email, nametocreate);
+                        final CreateClassThread a = new CreateClassThread(m, email, nametocreate);
                         a.execute();
                         new android.os.Handler().postDelayed(
                                 new Runnable() {
@@ -434,30 +436,8 @@ public class MainActivity extends AppCompatActivity {
                                                 outputStream.close();*/
                                                 db.addClass(new Class(nametocreate, result.split(":")[1], email, "0"));
                                                 refreshProfData(false);
-                                            /*}
-                                            catch(Exception e) {
-                                                FileOutputStream outputStream;
-                                                String filename="profClass";
-                                                try {
-                                                    outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-                                                    outputStream.write(new String(nametocreate + "--#--" + result.split(":")[1]).getBytes());
-                                                    outputStream.close();
-                                                }
-                                                catch (IOException e1){
-                                                    error[0] = true;
-                                                }
-
-                                            }*/
-                                            /*if(!error[0]){
-                                                if(createdClasses.size() == 0){
-                                                    refreshProfData();
-                                                }
-                                                else {
-                                                    createdClasses.add(new Class(nametocreate, result.split(":")[1]));
-                                                    classesAdapter.notifyDataSetChanged();
-                                                }
-                                            }*/
                                         }
+                                        a.cancel(true);
                                         progressDialog.dismiss();
                                     }
                                 }, 5000);
@@ -517,7 +497,7 @@ public class MainActivity extends AppCompatActivity {
         if(lc.size()==0 && fromThread==false)
         {
 
-            GetClassesDataThread gd=new GetClassesDataThread(this,null);
+            final GetClassesDataThread gd=new GetClassesDataThread(this,null);
             gd.execute(email,"profClasses");
             new android.os.Handler().postDelayed(
                     new Runnable() {
@@ -530,6 +510,7 @@ public class MainActivity extends AppCompatActivity {
                             else if(result.equals("done:0"))
                                 Toast.makeText(getApplicationContext(),"no classes yet",Toast.LENGTH_SHORT).show();
                             else Toast.makeText(getApplicationContext(),"no connection",Toast.LENGTH_SHORT).show();
+                            gd.cancel(true);
                         }
                     }, 3500);
         }
@@ -594,7 +575,7 @@ public class MainActivity extends AppCompatActivity {
             //final ArrayList<Class> lc2 =new ArrayList<Class>();
             result="";
             final ArrayList<Class> lc2=new ArrayList<Class>();
-            GetClassesDataThread gd=new GetClassesDataThread(this,lc2);
+            final GetClassesDataThread gd=new GetClassesDataThread(this,lc2);
             gd.execute(email,"studentClasses");
             new android.os.Handler().postDelayed(
                     new Runnable() {
@@ -623,6 +604,7 @@ public class MainActivity extends AppCompatActivity {
                             else if(result.equals("done:0"))
                                 Toast.makeText(getApplicationContext(),"no classes yet",Toast.LENGTH_SHORT).show();
                             else Toast.makeText(getApplicationContext(),"no connection",Toast.LENGTH_SHORT).show();
+                            gd.cancel(true);
                         }
                     }, 3500);
 

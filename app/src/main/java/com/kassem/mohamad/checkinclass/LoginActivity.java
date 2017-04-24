@@ -54,7 +54,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // TODO: Implement your own authentication logic here.
         result="";
-        LoginThread LT=new LoginThread(this);
+        final LoginThread LT=new LoginThread(this);
         LT.execute(email,password);
         new android.os.Handler().postDelayed(
                 new Runnable() {
@@ -68,7 +68,8 @@ public class LoginActivity extends AppCompatActivity {
                                 onLoginFailed("No connection");
                             else
                                 onLoginFailed(result);
-                         progressDialog.dismiss();
+                        LT.cancel(true);
+                        progressDialog.dismiss();
                     }
                 }, 5000);
 

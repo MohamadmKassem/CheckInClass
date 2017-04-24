@@ -151,7 +151,7 @@ public class prof_lectures extends AppCompatActivity {
         progressDialog.setMessage("Add Lecture please wait ...");
         progressDialog.show();
 
-        AddLectureThread a=new AddLectureThread(m,s1,d);
+        final AddLectureThread a=new AddLectureThread(m,s1,d);
         a.execute();
         result="";
         new android.os.Handler().postDelayed(
@@ -164,7 +164,7 @@ public class prof_lectures extends AppCompatActivity {
 
                             refreshLectures(false);
                         }else Toast.makeText(getApplicationContext(), "No connection", Toast.LENGTH_SHORT).show();
-
+                        a.cancel(true);
                         progressDialog.dismiss();
                     }
                 }, 5000);
@@ -174,7 +174,7 @@ public class prof_lectures extends AppCompatActivity {
          ArrayList<Lecture> a=db.getLectures(Integer.parseInt(classId));
          if(a.size()==0 && b==false)
          {
-             GetLecturesDataThread gd=new GetLecturesDataThread(this);
+             final GetLecturesDataThread gd=new GetLecturesDataThread(this);
              result="done:0";
              gd.execute(Integer.parseInt(classId));
 
@@ -190,30 +190,27 @@ public class prof_lectures extends AppCompatActivity {
                              else if(result.equals("done:0"))
                                  Toast.makeText(getApplicationContext(),"no lectures yet",Toast.LENGTH_SHORT).show();
                              else Toast.makeText(getApplicationContext(),"no connection",Toast.LENGTH_SHORT).show();
+                             gd.cancel(true);
                          }
                      }, 3500);
          }
-         if(a.size()!=0) {
+         if(a.size()!=0)
+         {
              LecturesAdapter l = new LecturesAdapter(a);
              ListView lv = (ListView) findViewById(R.id.lectures_created_listView);
              lv.setAdapter(l);
-
-         /*for(i=0;i<lc.size();i++)
-         {
-                Boolean open=lc.get(i).open;
-               String date=lc.get(i).date;
-               int nb =lc.get(i).nb;
-           }*/
-        /*lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-              @Override
-               public void onItemClck(AdapterView<?> adapterView, View view, int i, long l) {
-                  TextView className = (TextView) view.findViewById(R.id.classname);
-                  TextView classid = (TextView) view.findViewById(R.id.classid);
-                  Intent I=new Intent(m,SpeceficClass.class);
-                  I.putExtra("ClassName",className.getText().toString());
-                   I.putExtra("ClassId",classid.getText().toString());
-                   startActivity(I);
-                   Toast.makeText(getApplicationContext(), "ID: " + classid.getText().toString() + ", Name: " + className.getText().toString(), Toast.LENGTH_SHORT).show();
+             /*lv.setOnItemClickListener(new AdapterView.OnItemClickListener()
+            {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
+                {
+                    Switch S=(Switch)view.findViewById(R.id.lectureOpen);
+                    int lectureId=(int)S.getTag();
+                    Intent I=new Intent(m,ProfPresence.class);
+                    I.putExtra("lectureId",lectureId);
+                    //I.putExtra("ClassId",classid.getText().toString());
+                    startActivity(I);
+                    //Toast.makeText(getApplicationContext(), "ID: " + classid.getText().toString() + ", Name: " + className.getText().toString(), Toast.LENGTH_SHORT).show();
                 }
             });*/
          }
@@ -233,7 +230,7 @@ public class prof_lectures extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         //your deleting code
                         result="";
-                        deleteLectureThread dl=new deleteLectureThread(m,i);
+                        final deleteLectureThread dl=new deleteLectureThread(m,i);
                         dl.execute();
                         new android.os.Handler().postDelayed(
                                 new Runnable() {
@@ -245,7 +242,7 @@ public class prof_lectures extends AppCompatActivity {
                                             refreshLectures(false);
                                         }
                                         else Toast.makeText(getApplicationContext(),"no connection",Toast.LENGTH_SHORT).show();
-
+                                        dl.cancel(true);
                                     }
                                 }, 3500);
 
@@ -347,6 +344,17 @@ public class prof_lectures extends AppCompatActivity {
 
                     diaBox.show();
                     return false;
+                }
+            });
+            view1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Switch S=(Switch)v.findViewById(R.id.lectureOpen);
+                    int lectureId=(int)S.getTag();
+                    Intent I=new Intent(m,ProfPresence.class);
+                    I.putExtra("lectureId",lectureId);
+                    //I.putExtra("ClassId",classid.getText().toString());
+                    startActivity(I);
                 }
             });
             return view1;
@@ -482,7 +490,7 @@ public class prof_lectures extends AppCompatActivity {
          progressDialog.setIndeterminate(true);
          progressDialog.setMessage("changing lecture state ...");
          progressDialog.show();
-         OpenCloseLectureThread O=new OpenCloseLectureThread(this,i,open,time,loc,d);
+         final OpenCloseLectureThread O=new OpenCloseLectureThread(this,i,open,time,loc,d);
          O.execute();
          new android.os.Handler().postDelayed(
                  new Runnable()
@@ -507,6 +515,7 @@ public class prof_lectures extends AppCompatActivity {
                                  s.setChecked(true);
                              Toast.makeText(getApplicationContext(),"no connection", Toast.LENGTH_SHORT).show();
                          }
+                         O.cancel(true);
                          progressDialog.dismiss();
                          s.setClickable(true);
                      }

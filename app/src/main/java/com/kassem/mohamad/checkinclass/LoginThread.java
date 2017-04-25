@@ -45,12 +45,13 @@ class LoginThread extends AsyncTask<String, Void, String> {
         catch (Exception e)
         {
             //error=e.getMessage();
-            return "";
+            return "error";
         }
 
     }
     protected void onPostExecute(String r) {
         super.onPostExecute(r);
-        if(r!="")m.result=r;
+        m.result=r;
+        m.finishlogin();
     }
 }

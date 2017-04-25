@@ -66,10 +66,10 @@ public class MainActivity extends AppCompatActivity {
     String nametocreate;
     private boolean isFirstOpenStudentTab = true;
     private boolean isFirstOpenProftTab = true;
-
+    ProgressDialog progressDialog;
     ClassesAdapter classesAdapter;
     ArrayList<Class> createdClasses;
-
+    AddClassThread a;
     DatabaseHandler db;
 
 
@@ -291,59 +291,16 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 // search for the new class
 
-               try{
-                   String id= editText.getText().toString();
-
-                final ProgressDialog progressDialog = new ProgressDialog(MainActivity.this, R.style.AppTheme_Dark_Dialog);
-                progressDialog.setIndeterminate(true);
-                progressDialog.setMessage("Search a class ...");
-                progressDialog.show();
-
-                result="";
-                final AddClassThread a=new AddClassThread(m,id);
-                a.execute();
-                new android.os.Handler().postDelayed(
-                        new Runnable() {
-                            public void run()
-                            {
-                                if(!result.equals("") && !result.equals("failure:0")){
-                                    linearLayout.removeAllViews();
-                                    LinearLayout newClassAdd  = new LinearLayout(m);
-                                    newClassAdd.setOrientation(LinearLayout.VERTICAL);
-                                    TextView newClass = new TextView(m);
-                                    newClass.setText(result.split(":")[2]);
-                                    TextView prof = new TextView(m);
-                                    prof.setText(result.split(":")[1]);
-                                    newClassAdd.addView(newClass);
-                                    newClassAdd.addView(prof);
-
-                                    ImageButton register = new ImageButton(m);
-                                    int idSearchbButton = getResources().getIdentifier("com.kassem.mohamad.checkinclass:drawable/ic_add_box_black_24dp" , null, null);
-                                    register.setImageResource(idSearchbButton);
-                                    register.setTag(Integer.valueOf(result.split(":")[3]));
-                                    register.setOnClickListener(new View.OnClickListener()
-                                    {
-                                        @Override
-                                        public void onClick(View view)
-                                        {
-                                            ImageButton b=(ImageButton)view;
-                                            int id=(int)b.getTag();
-                                            sendrequest(id);
-
-                                        }
-                                    });
-
-                                    linearLayout.addView(newClassAdd);
-                                    linearLayout.addView(register);
-
-                                }
-                                else {
-                                    Toast.makeText(getApplicationContext(),"Search class failed",Toast.LENGTH_SHORT).show();
-                                }
-                                progressDialog.dismiss();
-                                a.cancel(true);
-                            }
-                        }, 5000);
+               try
+               {
+                    String id= editText.getText().toString();
+                    progressDialog = new ProgressDialog(MainActivity.this, R.style.AppTheme_Dark_Dialog);
+                    progressDialog.setIndeterminate(true);
+                    progressDialog.setMessage("Search a class ...");
+                    progressDialog.show();
+                    result="";
+                    a=new AddClassThread(m,id);
+                    a.execute();
                }
                catch(Exception e){}
             }
@@ -363,7 +320,46 @@ public class MainActivity extends AppCompatActivity {
         linearLayout.addView(searchButton);
         linearLayout.addView(exitButton);
     }
+    public void finishAddClass()
+    {
+        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.search_class_linear_layout);
+        if(!result.equals("") && !result.equals("failure:0")){
+            linearLayout.removeAllViews();
+            LinearLayout newClassAdd  = new LinearLayout(m);
+            newClassAdd.setOrientation(LinearLayout.VERTICAL);
+            TextView newClass = new TextView(m);
+            newClass.setText(result.split(":")[2]);
+            TextView prof = new TextView(m);
+            prof.setText(result.split(":")[1]);
+            newClassAdd.addView(newClass);
+            newClassAdd.addView(prof);
 
+            ImageButton register = new ImageButton(m);
+            int idSearchbButton = getResources().getIdentifier("com.kassem.mohamad.checkinclass:drawable/ic_add_box_black_24dp" , null, null);
+            register.setImageResource(idSearchbButton);
+            register.setTag(Integer.valueOf(result.split(":")[3]));
+            register.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View view)
+                {
+                    ImageButton b=(ImageButton)view;
+                    int id=(int)b.getTag();
+                    sendrequest(id);
+
+                }
+            });
+
+            linearLayout.addView(newClassAdd);
+            linearLayout.addView(register);
+
+        }
+        else {
+            Toast.makeText(getApplicationContext(),"Search class failed",Toast.LENGTH_SHORT).show();
+        }
+        progressDialog.dismiss();
+        a.cancel(true);
+    }
     private void sendrequest(int id)
     {
         final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.search_class_linear_layout);

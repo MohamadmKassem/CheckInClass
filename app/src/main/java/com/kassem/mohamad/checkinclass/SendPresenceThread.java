@@ -52,7 +52,8 @@ class SendPresenceThread extends AsyncTask<String, Void, String> {
                 Location profLoc=new Location("prof");
                 profLoc.setAltitude(Double.parseDouble(data[1].split("//")[0]));
                 profLoc.setLongitude(Double.parseDouble(data[1].split("//")[1]));
-
+                while(m.loc.equals(""))
+                {}
                 Location stdloc=new Location("student");
                 stdloc.setAltitude(Double.parseDouble(loc.split("//")[0]));
                 stdloc.setLongitude(Double.parseDouble(loc.split("//")[1]));

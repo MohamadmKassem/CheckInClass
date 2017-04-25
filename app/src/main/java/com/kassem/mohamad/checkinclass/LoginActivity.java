@@ -13,6 +13,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.FileOutputStream;
+import java.sql.Time;
+import java.util.Calendar;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -25,6 +27,7 @@ public class LoginActivity extends AppCompatActivity {
     String result;
     private String mailAddress;
     ProgressDialog progressDialog;
+    LoginThread LT;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,7 +46,7 @@ public class LoginActivity extends AppCompatActivity {
         }
         loginButton.setEnabled(false);
 
-        final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this, R.style.AppTheme_Dark_Dialog);
+        progressDialog = new ProgressDialog(LoginActivity.this, R.style.AppTheme_Dark_Dialog);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Authenticating...");
         progressDialog.show();
@@ -54,9 +57,10 @@ public class LoginActivity extends AppCompatActivity {
 
         // TODO: Implement your own authentication logic here.
         result="";
-        final LoginThread LT=new LoginThread(this);
+        LT=new LoginThread(this);
         LT.execute(email,password);
-        new android.os.Handler().postDelayed(
+
+        /*new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run()
                     {
@@ -68,14 +72,21 @@ public class LoginActivity extends AppCompatActivity {
                                 onLoginFailed("No connection");
                             else
                                 onLoginFailed(result);
-                        LT.cancel(true);
+                       // LT.cancel(true);
                         progressDialog.dismiss();
                     }
-                }, 5000);
-
+                }, 5000);*/
     }
 
-
+    public void finishlogin()
+    {
+        if(result.equals("error"))
+            onLoginFailed("No connection");
+        else if(result.equals("LoginSuccess"))
+            onLoginSuccess();
+        LT.cancel(true);
+        progressDialog.dismiss();
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_SIGNUP) {

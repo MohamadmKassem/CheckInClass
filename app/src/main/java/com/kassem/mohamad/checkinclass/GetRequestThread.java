@@ -24,7 +24,7 @@ class GetRequestThread extends AsyncTask<String, Void, String> {
     protected String doInBackground(String...params) {
         PrintWriter out;
         Scanner in;
-        Socket s;
+        Socket s=null;
         try {
             //s = new Socket("192.168.43.157",8082);
 
@@ -48,17 +48,20 @@ class GetRequestThread extends AsyncTask<String, Void, String> {
                 m.AlS.add(S);
                 more=in.nextLine();
             }
-
+            s.close();
             return "done:"+nb;
         }
         catch (Exception e)
         {
-            return "no connection";
+            try {if(s!=null)s.close();}
+            catch (IOException e1) {}
+            finally {return "no connection";}
         }
 
     }
     protected void onPostExecute(String r) {
         super.onPostExecute(r);
         if(r!="") m.result=r;
+        m.finishGet();
     }
 }

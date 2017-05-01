@@ -5,6 +5,7 @@ package com.kassem.mohamad.checkinclass;
 
  */
 
+import android.location.Location;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
@@ -13,24 +14,18 @@ import java.io.*;
 import java.net.*;
 import java.util.Scanner;
 
-import static android.os.SystemClock.sleep;
 
-
-class OpenCloseLectureThread extends AsyncTask<String, Void, String> {
-    prof_lectures m;
-    int id;
-    String open;
-    int time;
-    String loc;
-    int distance;
-    OpenCloseLectureThread(prof_lectures m,int id,String open,int time,String loc,int d)
+class changePresenceThread extends AsyncTask<String, Void, String> {
+    ProfPresence m;
+    String StudentEmail;
+    int LectureId;
+    String todo;
+    changePresenceThread(ProfPresence m,String todo)
     {
-        this.distance=d;
-        this.loc=loc;
-        this.time=time;
         this.m=m;
-        this.id=id;
-        this.open=open;
+        LectureId=Integer.valueOf(todo.split("--#--")[2]);
+        StudentEmail=todo.split("--#--")[1];
+        this.todo=todo.split("--#--")[0];
     }
     protected String doInBackground(String...params) {
         PrintWriter out;
@@ -38,39 +33,37 @@ class OpenCloseLectureThread extends AsyncTask<String, Void, String> {
         Socket s=null;
         try {
             //s = new Socket("192.168.43.157",8082);
-            if(m.loc.equals(""))
-            {
-                sleep(4000);
-            }
-            if(m.loc.equals(""))
-            {
-             return"cannot get locatin try again";
-            }
-            loc=m.loc;
+
             s=new Socket();
-            //s.connect(new InetSocketAddress("192.168.43.157",8082),1500); // alaa server
+            //s.connect(new InetSocketAddress("192.168.43.157",8082),4000); // alaa server
             s.connect(new InetSocketAddress("192.168.0.100",8082),4000); //alaa server by wifi
             //s.connect(new InetSocketAddress("192.168.1.66",8082),4000); // mohamad server
             in =new Scanner(s.getInputStream());
             out = new PrintWriter(s.getOutputStream(),true);
-            out.println("changeLecture--#--"+id+"--#--"+open+"--#--"+loc+"--#--"+time+"--#--"+distance);
+            out.println("changePresence--#--"+todo+"--#--"+StudentEmail+"--#--"+LectureId);
             String r=in.nextLine();
-            s.close();
-            return r;
+            if(r.equals("cannot change presence"))
+                return"cannot change presence";
+            else
+            {
+                if(todo.equals("to false"))
+                m.db.changepresence(LectureId,StudentEmail,0);
+                else m.db.changepresence(LectureId,StudentEmail,1);
+                return"done";
+            }
         }
         catch (Exception e)
         {
             //error=e.getMessage();
             try {if(s!=null)s.close();}
             catch (IOException e1) {}
-            finally {return "failure:0";}
-
+            finally {return "failure";}
         }
 
     }
     protected void onPostExecute(String r) {
         super.onPostExecute(r);
         if(r!="")m.result=r;
-        m.finishOpenClose();
+        m.finishChange();
     }
 }

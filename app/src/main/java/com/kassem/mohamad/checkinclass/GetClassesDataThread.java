@@ -26,8 +26,9 @@ class GetClassesDataThread extends AsyncTask<String, Void, String> {
     protected String doInBackground(String...params) {
         PrintWriter out;
         Scanner in;
-        Socket s;
+        Socket s=null;
         String email=params[0];
+        String who=params[1];
         try {
             //s = new Socket("192.168.43.157",8082);
             s=new Socket();
@@ -52,18 +53,23 @@ class GetClassesDataThread extends AsyncTask<String, Void, String> {
                 more=in.nextLine();
 
             }
-            //m.refreshProfData(true);
-            return "done:"+nb;
+            s.close();
+            return who+"//done:"+nb;
         }
         catch (Exception e)
         {
             //error=e.getMessage();
-            return "failure";
+            try {if(s!=null)s.close();}
+            catch (IOException e1) {}
+            finally {return who+"//failure";}
         }
 
     }
     protected void onPostExecute(String r) {
         super.onPostExecute(r);
-        if(r!="")m.result=r;
+        m.result=r.split("//")[1];
+        if(r.split("//")[0].equals("profClasses"))
+            m.finishGetClasses();
+        else m.finishStudentClasses();
     }
 }

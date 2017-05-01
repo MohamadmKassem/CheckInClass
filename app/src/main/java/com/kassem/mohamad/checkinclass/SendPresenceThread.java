@@ -14,6 +14,8 @@ import java.io.*;
 import java.net.*;
 import java.util.Scanner;
 
+import static android.os.SystemClock.sleep;
+
 
 class SendPresenceThread extends AsyncTask<String, Void, String> {
     SpeceficStudentClass m;
@@ -30,7 +32,7 @@ class SendPresenceThread extends AsyncTask<String, Void, String> {
     protected String doInBackground(String...params) {
         PrintWriter out;
         Scanner in;
-        Socket s;
+        Socket s=null;
         try {
             //s = new Socket("192.168.43.157",8082);
 
@@ -40,6 +42,11 @@ class SendPresenceThread extends AsyncTask<String, Void, String> {
             //s.connect(new InetSocketAddress("192.168.1.66",8082),4000); // mohamad server
             in =new Scanner(s.getInputStream());
             out = new PrintWriter(s.getOutputStream(),true);
+            if(m.loc.equals(""))
+                sleep(3000);
+            if(m.loc.equals(""))
+                return "please try agian";
+            loc=m.loc;
             out.println("Presence--#--"+id+"--#--"+email+"--#--"+loc);
             String r=in.nextLine();
             if(r.equals("cannot add presence"))
@@ -48,48 +55,51 @@ class SendPresenceThread extends AsyncTask<String, Void, String> {
             {
                 String[] data=new String[3];
                 data=r.split("--#--");
-
+                if(loc.equals(""))
+                    return "failure";
                 Location profLoc=new Location("prof");
                 profLoc.setAltitude(Double.parseDouble(data[1].split("//")[0]));
                 profLoc.setLongitude(Double.parseDouble(data[1].split("//")[1]));
-                while(m.loc.equals(""))
-                {}
+
                 Location stdloc=new Location("student");
-                stdloc.setAltitude(Double.parseDouble(loc.split("//")[0]));
-                stdloc.setLongitude(Double.parseDouble(loc.split("//")[1]));
+                stdloc.setAltitude(Double.parseDouble(m.loc.split("//")[0]));
+                stdloc.setLongitude(Double.parseDouble(m.loc.split("//")[1]));
 
                 float dis=profLoc.distanceTo(stdloc);
-                if(dis>Integer.valueOf(data[2]))
+                if(dis>Float.parseFloat(data[2]))
                 {
                     out.println("fail");
+                    s.close();
                     return "cannot add presence "+dis;
                 }
                 else{
                     out.println("add");
                     out.println(dis);
                     if(in.nextLine().equals("done"))
-                        return "done "+dis ;
+                    {
+                        s.close();
+                        return "done " + dis;
+                    }
                     else
+                    {
+                        s.close();
                         return "cannot add presence";
+                    }
                 }
             }
-            //DatagramSocket D = new DatagramSocket();
-            //byte[] b ="hello".getBytes();
-            //InetAddress ip = InetAddress.getByName("192.168.43.153");
-            //DatagramPacket p;
-            //p=new DatagramPacket(b,b.length,ip,8082);
-            //D.send(p);
-
         }
         catch (Exception e)
         {
             //error=e.getMessage();
-            return "failure";
+            try {if(s!=null)s.close();}
+            catch (IOException e1) {}
+            finally {return loc;}
         }
 
     }
     protected void onPostExecute(String r) {
         super.onPostExecute(r);
         if(r!="")m.result=r;
+        m.finishSendPresence();
     }
 }

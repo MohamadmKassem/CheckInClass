@@ -17,6 +17,7 @@ import java.util.Scanner;
 
 class GetPresenceThread extends AsyncTask<Integer, Void, String> {
      ProfPresence m;
+    int Lec;
     GetPresenceThread(ProfPresence m)
     {
         this.m=m;
@@ -24,12 +25,13 @@ class GetPresenceThread extends AsyncTask<Integer, Void, String> {
     protected String doInBackground(Integer...params) {
         PrintWriter out;
         Scanner in;
-        Socket s;
+        Socket s=null;
         int LectureId =(int)params[0];
+        Lec=LectureId;
         try {
             s=new Socket();
             //s.connect(new InetSocketAddress("192.168.43.157",8082),4000); // alaa server
-            s.connect(new InetSocketAddress("192.168.0.100",8082),4000); //alaa server by wifi
+            s.connect(new InetSocketAddress("192.168.0.100",8082),2000); //alaa server by wifi
             //s.connect(new InetSocketAddress("192.168.1.66",8082),4000); // mohamad server
             ArrayList<presence> AP=new ArrayList<presence>();
             in =new Scanner(s.getInputStream());
@@ -37,10 +39,8 @@ class GetPresenceThread extends AsyncTask<Integer, Void, String> {
             out.println("GetPresence--#--"+LectureId);
             String more=in.nextLine();
             int nb=0;
-            String rf="";
             while(true) {
                 errorThread e=new errorThread();
-                rf+="/"+nb;
                 nb++;
                 if(more.equals(new String("end")))
                     break;
@@ -50,7 +50,6 @@ class GetPresenceThread extends AsyncTask<Integer, Void, String> {
 
                 presence p=new presence(fullname,email,here);
                 AP.add(p);
-                rf+="/"+AP.size();
                 more=in.nextLine();
             }
             //m.refreshProfData(true);
@@ -59,19 +58,24 @@ class GetPresenceThread extends AsyncTask<Integer, Void, String> {
             {
                 r=m.db.updatePresence(LectureId,AP);
                 if(r.equals("done"))
-                    return rf;
+                    return "done";
             }
-            return rf+"--"+r;
+            s.close();
+            return "try again";
         }
         catch (Exception e)
         {
             //error=e.getMessage();
-            return e.toString();
+            try {if(s!=null)s.close();}
+            catch (IOException e1) {}
+            finally {return "no connection";}
         }
 
     }
     protected void onPostExecute(String r) {
         super.onPostExecute(r);
         if(r!="")m.result=r;
+        m.UpdateRegistreIfneed();
+       // m.finishGetPresence();
     }
 }

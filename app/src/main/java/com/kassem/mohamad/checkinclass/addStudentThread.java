@@ -14,11 +14,17 @@ import java.net.*;
 import java.util.Scanner;
 
 
-class LoginThread extends AsyncTask<String, Void, String> {
-    LoginActivity m;
-    LoginThread(LoginActivity m)
+class addStudentThread extends AsyncTask<String, Void, String> {
+    Student_of_lectures m;
+    String email;
+    String pass;
+    int classid;
+    addStudentThread(Student_of_lectures m,String email,String pass,int id)
     {
+        classid=id;
         this.m=m;
+        this.email=email;
+        this.pass=pass;
     }
     protected String doInBackground(String...params) {
         PrintWriter out;
@@ -26,28 +32,31 @@ class LoginThread extends AsyncTask<String, Void, String> {
         Socket s=null;
         try {
             //s = new Socket("192.168.43.157",8082);
+
             s=new Socket();
-            //s.connect(new InetSocketAddress("192.168.43.157",8082),4000); // alaa server phn
-            s.connect(new InetSocketAddress("192.168.0.100",8082),4000);//wifi alaa
+            //s.connect(new InetSocketAddress("192.168.43.157",8082),4000); // alaa server
+            s.connect(new InetSocketAddress("192.168.0.100",8082),4000); //alaa server by wifi
             //s.connect(new InetSocketAddress("192.168.1.66",8082),4000); // mohamad server
             in =new Scanner(s.getInputStream());
             out = new PrintWriter(s.getOutputStream(),true);
-            out.println("login--#--"+params[0]+"--#--"+params[1]);
+            out.println("addRegistre--#--"+email+"--#--"+pass+"--#--"+classid);
             String r=in.nextLine();
+            if(r.split("--#--")[0].equals("done"))
+                m.db.addregistre(classid,email,r.split("--#--")[1]);
             s.close();
-            return r;
+            return r.split("--#--")[0];
         }
         catch (Exception e)
         {
+            //error=e.getMessage();
             try {if(s!=null)s.close();}
             catch (IOException e1) {}
-            finally {return "error";}
+            finally {return "";}
         }
-
     }
     protected void onPostExecute(String r) {
         super.onPostExecute(r);
         m.result=r;
-        m.finishlogin();
+       m.finishAddStudent();
     }
 }

@@ -25,7 +25,7 @@ class deleteLectureThread extends AsyncTask<String, Void, String> {
     protected String doInBackground(String...params) {
         PrintWriter out;
         Scanner in;
-        Socket s;
+        Socket s=null;
         try {
             //s = new Socket("192.168.43.157",8082);
 
@@ -37,23 +37,22 @@ class deleteLectureThread extends AsyncTask<String, Void, String> {
             out = new PrintWriter(s.getOutputStream(),true);
             out.println("deleteLecture--#--"+id);
             String r=in.nextLine();
-            //DatagramSocket D = new DatagramSocket();
-            //byte[] b ="hello".getBytes();
-            //InetAddress ip = InetAddress.getByName("192.168.43.153");
-            //DatagramPacket p;
-            //p=new DatagramPacket(b,b.length,ip,8082);
-            //D.send(p);
+            m.db.deleteLecture(id);
+            s.close();
             return r;
         }
         catch (Exception e)
         {
             //error=e.getMessage();
-            return "failure:0";
+            try {if(s!=null)s.close();}
+            catch (IOException e1) {}
+            finally {return "failure:0";}
         }
 
     }
     protected void onPostExecute(String r) {
         super.onPostExecute(r);
         if(r!="")m.result=r;
+        m.finishDeleteLec();
     }
 }

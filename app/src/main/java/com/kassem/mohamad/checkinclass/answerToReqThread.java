@@ -24,7 +24,7 @@ class answerToReqThread extends AsyncTask<String, Void, String> {
     protected String doInBackground(String...params) {
         PrintWriter out;
         Scanner in;
-        Socket s;
+        Socket s=null;
         try {
             //s = new Socket("192.168.43.157",8082);
 
@@ -42,17 +42,23 @@ class answerToReqThread extends AsyncTask<String, Void, String> {
             //DatagramPacket p;
             //p=new DatagramPacket(b,b.length,ip,8082);
             //D.send(p);
-            return r;
+            s.close();
+            if(r.split("--#--")[0].equals("done") && params[0].split("--#--")[0].equals("AcceptReq"))
+                m.db.addregistre(Integer.valueOf(params[0].split("--#--")[1]),params[0].split("--#--")[2],r.split("--#--")[1]);
+            return params[0].split("--#--")[0]+"//"+r.split("--#--")[0];
         }
         catch (Exception e)
         {
-            //error=e.getMessage();
-            return "";
+            try {if(s!=null)s.close();}
+            catch (IOException e1) {}
+            finally {return params[0].split("--#--")[0] + "//error";}
         }
-
     }
     protected void onPostExecute(String r) {
         super.onPostExecute(r);
-        if(r!="") m.result=r;
+        if(r!="") m.result=r.split("//")[1];
+        if(r.split("//")[0].equals("AcceptReq"))
+            m.finishAccResp();
+        else m.finishReject();
     }
 }

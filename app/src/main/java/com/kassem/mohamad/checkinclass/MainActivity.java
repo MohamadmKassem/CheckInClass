@@ -2,6 +2,7 @@ package com.kassem.mohamad.checkinclass;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.BitmapDrawable;
@@ -9,10 +10,16 @@ import android.graphics.drawable.Drawable;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.Toolbar;
-
+import android.content.Context;
+import android.view.GestureDetector;
+import android.view.GestureDetector.SimpleOnGestureListener;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnTouchListener;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -40,6 +47,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -71,8 +79,11 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Class> createdClasses;
     AddClassThread a;
     DatabaseHandler db;
-
-
+    SendReqThread S;
+    CreateClassThread Ca;
+    GetClassesDataThread gd;
+    ArrayList<Class> lc2;
+    int position;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,6 +110,8 @@ public class MainActivity extends AppCompatActivity {
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 if(isFirstOpenStudentTab){
                     if(position == 0){
+                        refreshStudentTab();
+                        m.position=0;
                     }
                     isFirstOpenStudentTab = false;
                 }
@@ -108,12 +121,14 @@ public class MainActivity extends AppCompatActivity {
             public void onPageSelected(int position) {
                 if(position == 0){
                     refreshStudentTab();
+                    m.position=0;
                 }
                 else if(position == 1){
                     if(isFirstOpenProftTab){
                         refreshProfData(false);
                     }
                     isFirstOpenProftTab = false;
+                    m.position=1;
                 }
 
             }
@@ -163,6 +178,7 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivityForResult(intent,request_code);
         }
+
     }
 
 
@@ -364,22 +380,23 @@ public class MainActivity extends AppCompatActivity {
     {
         final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.search_class_linear_layout);
         result="";
-        final SendReqThread S=new SendReqThread(m,id,email);
+        S=new SendReqThread(m,id,email);
         S.execute();
-        new android.os.Handler().postDelayed(new Runnable()
+    }
+    public void finishsendreq()
+    {
+        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.search_class_linear_layout);
+        if(result.equals("done"))
         {
-            public void run()
-            {
-                if(result.equals("done"))
-                {
-                    linearLayout.removeAllViews();
-                    Toast.makeText(getApplicationContext(), "sending", Toast.LENGTH_SHORT).show();
-                }
-                else
-                    Toast.makeText(getApplicationContext(),result,Toast.LENGTH_SHORT).show();
-                S.cancel(true);
-            }
-        }, 3000);
+            linearLayout.removeAllViews();
+            Toast.makeText(getApplicationContext(), "sending", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            linearLayout.removeAllViews();
+            Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
+        }
+        S.cancel(true);
     }
     private void create_class() {
         final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.prof_linear_layout);
@@ -398,45 +415,15 @@ public class MainActivity extends AppCompatActivity {
                 try{
                     nametocreate= editText.getText().toString();
                     if(!nametocreate.equals("")) {
-                        final ProgressDialog progressDialog = new ProgressDialog(MainActivity.this, R.style.AppTheme_Dark_Dialog);
+                        progressDialog = new ProgressDialog(MainActivity.this, R.style.AppTheme_Dark_Dialog);
                         progressDialog.setIndeterminate(true);
                         progressDialog.setMessage("Creating ...");
                         progressDialog.show();
 
                         result = "";
-                        final boolean[] error = {false};
-                        final CreateClassThread a = new CreateClassThread(m, email, nametocreate);
-                        a.execute();
-                        new android.os.Handler().postDelayed(
-                                new Runnable() {
-                                    public void run() {
-                                        if(result.equals("failure:0")) {
-                                            Toast.makeText(getApplicationContext(), "Failure", Toast.LENGTH_LONG).show();
-                                        }
-                                        else {
-                                            linearLayout.removeAllViews();
-                                            /*try {
-                                                FileInputStream inputStream = openFileInput("profClass");
-                                                int i;
-                                                String data = "";
-                                                while ((i = inputStream.read()) != -1) {
-                                                    data += String.valueOf((char) i);
-                                                }
-                                                data += "--#--" + nametocreate + "--#--" + result.split(":")[1];
-                                                inputStream.close();
 
-                                                FileOutputStream outputStream;
-                                                String filename = "profClass";
-                                                outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-                                                outputStream.write(data.getBytes());
-                                                outputStream.close();*/
-                                                db.addClass(new Class(nametocreate, result.split(":")[1], email, "0"));
-                                                refreshProfData(false);
-                                        }
-                                        a.cancel(true);
-                                        progressDialog.dismiss();
-                                    }
-                                }, 5000);
+                        Ca = new CreateClassThread(m, email, nametocreate);
+                        Ca.execute();
                     }
                     else {
                         editText.setError("Enter a class name!");
@@ -459,6 +446,21 @@ public class MainActivity extends AppCompatActivity {
         linearLayout.addView(editText);
         linearLayout.addView(createButton);
         linearLayout.addView(exitButton);
+    }
+
+    public void finishCreate()
+    {
+        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.prof_linear_layout);
+        if(result.equals("failure:0")) {
+            Toast.makeText(getApplicationContext(), "Failure", Toast.LENGTH_LONG).show();
+        }
+        else {
+            linearLayout.removeAllViews();
+            db.addClass(new Class(nametocreate, result.split(":")[1], email, "0"));
+            refreshProfData(false);
+        }
+        Ca.cancel(true);
+        progressDialog.dismiss();
     }
     private boolean loadClassesArray(){
         FileInputStream inputStream = null;
@@ -488,47 +490,71 @@ public class MainActivity extends AppCompatActivity {
     public void refreshProfData(boolean fromThread) {
         //Toast.makeText(getApplicationContext(),"here",Toast.LENGTH_SHORT).show();
         //ArrayList<Class> lc =new ArrayList<Class>();
-
         ArrayList<Class> lc=db.getAllclass(email);
         if(lc.size()==0 && fromThread==false)
         {
-
-            final GetClassesDataThread gd=new GetClassesDataThread(this,null);
+            gd=new GetClassesDataThread(this,null);
             gd.execute(email,"profClasses");
-            new android.os.Handler().postDelayed(
-                    new Runnable() {
-                        public void run()
-                        {
-                            if(!result.equals("done:0") && !result.equals("failure"))
-                            {
-                                refreshProfData(true);
-                            }
-                            else if(result.equals("done:0"))
-                                Toast.makeText(getApplicationContext(),"no classes yet",Toast.LENGTH_SHORT).show();
-                            else Toast.makeText(getApplicationContext(),"no connection",Toast.LENGTH_SHORT).show();
-                            gd.cancel(true);
-                        }
-                    }, 3500);
         }
-        if(lc.size()!=0){
+        else{
             classesAdapter = new ClassesAdapter(lc);
             ListView classesListView = (ListView) findViewById(R.id.classes_created_listView);
             classesListView.setAdapter(classesAdapter);
-            classesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    TextView className = (TextView) view.findViewById(R.id.classname);
-                    TextView classid = (TextView) view.findViewById(R.id.classid);
-                    Intent I=new Intent(m,SpeceficClass.class);
-                    I.putExtra("ClassName",className.getText().toString());
-                    I.putExtra("ClassId",classid.getText().toString());
-                    startActivity(I);
-
-                }
-            });
         }
-    }
 
+    }
+    private AlertDialog AskOption(int id)
+    {
+        final int classid=id;
+        final Date d=new Date();
+        AlertDialog myQuittingDialogBox =new AlertDialog.Builder(this)
+                //set message, title, and icon
+                .setTitle("delete class")
+                .setMessage("are you sure want to delete this class ")
+
+
+                .setPositiveButton("yes", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        DeleteClassThread DL=new DeleteClassThread(m,classid);
+                        DL.execute();
+                        dialog.dismiss();
+                    }
+                })
+
+
+
+                .setNegativeButton("no", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        dialog.dismiss();
+
+                    }
+                })
+                .create();
+        return myQuittingDialogBox;
+
+    }
+    public void finishDeleteClass()
+    {
+        if(result.equals("done"))
+            refreshProfData(false);
+        else Toast.makeText(getApplicationContext(),result,Toast.LENGTH_SHORT).show();
+    }
+    public void finishGetClasses()
+    {
+        if(!result.equals("done:0") && !result.equals("failure"))
+        {
+            refreshProfData(true);
+        }
+        else if(result.equals("done:0"))
+        {
+            Toast.makeText(getApplicationContext(),"no classes yet",Toast.LENGTH_SHORT).show();
+            refreshProfData(true);
+        }
+        else Toast.makeText(getApplicationContext(),"no connection",Toast.LENGTH_SHORT).show();
+        gd.cancel(true);
+    }
 
     class ClassesAdapter extends BaseAdapter {
 
@@ -563,6 +589,30 @@ public class MainActivity extends AppCompatActivity {
             TextView idTextView = (TextView) view1.findViewById(R.id.classid);
             nameTextView.setText(createdClasses.get(i).getName());
             idTextView.setText(createdClasses.get(i).getId());
+            if(position==1)
+            {
+                view1.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        TextView classid = (TextView) v.findViewById(R.id.classid);
+                        int CI=Integer.valueOf(classid.getText().toString());
+                        AlertDialog diaBox = AskOption(CI);
+                        diaBox.show();
+                        return false;
+                    }
+                });
+                view1.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        TextView className = (TextView) v.findViewById(R.id.classname);
+                        TextView classid = (TextView) v.findViewById(R.id.classid);
+                        Intent I=new Intent(m,SpeceficClass.class);
+                        I.putExtra("ClassName",className.getText().toString());
+                        I.putExtra("ClassId",classid.getText().toString());
+                        startActivity(I);
+                    }
+                });
+            }
             return view1;
         }
     }
@@ -570,41 +620,38 @@ public class MainActivity extends AppCompatActivity {
         //Toast.makeText(getApplicationContext(),"here",Toast.LENGTH_SHORT).show();
             //final ArrayList<Class> lc2 =new ArrayList<Class>();
             result="";
-            final ArrayList<Class> lc2=new ArrayList<Class>();
-            final GetClassesDataThread gd=new GetClassesDataThread(this,lc2);
+            lc2=new ArrayList<Class>();
+            gd=new GetClassesDataThread(this,lc2);
             gd.execute(email,"studentClasses");
-            new android.os.Handler().postDelayed(
-                    new Runnable() {
-                        public void run()
-                        {
-                            if(!result.equals("done:0") && !result.equals("failure"))
-                            {
-                                if(lc2.size()!=0) {
-                                    classesAdapter = new ClassesAdapter(lc2);
-                                    ListView classesListView = (ListView) findViewById(R.id.Student_class_linear_layout);
-                                    classesListView.setAdapter(classesAdapter);
-                                    classesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                        @Override
-                                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                                            TextView className = (TextView) view.findViewById(R.id.classname);
-                                            TextView classid = (TextView) view.findViewById(R.id.classid);
-                                            Intent I = new Intent(m, SpeceficStudentClass.class);
-                                            I.putExtra("email", email);
-                                            I.putExtra("ClassId", classid.getText().toString());
-                                            startActivity(I);
-
-                                        }
-                                    });
-                                }
-                            }
-                            else if(result.equals("done:0"))
-                                Toast.makeText(getApplicationContext(),"no classes yet",Toast.LENGTH_SHORT).show();
-                            else Toast.makeText(getApplicationContext(),"no connection",Toast.LENGTH_SHORT).show();
-                            gd.cancel(true);
-                        }
-                    }, 3500);
-
         }
+    public void finishStudentClasses()
+    {
+        if(!result.equals("done:0") && !result.equals("failure"))
+        {
+            if(lc2.size()!=0) {
+                classesAdapter = new ClassesAdapter(lc2);
+                ListView classesListView = (ListView) findViewById(R.id.Student_class_linear_layout);
+                classesListView.setAdapter(classesAdapter);
+                classesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        TextView className = (TextView) view.findViewById(R.id.classname);
+                        TextView classid = (TextView) view.findViewById(R.id.classid);
+                        Intent I = new Intent(m, SpeceficStudentClass.class);
+                        I.putExtra("email", email);
+                        I.putExtra("ClassId", classid.getText().toString());
+                        startActivity(I);
+                        //Toast.makeText(getApplicationContext(),"!!!",Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+            }
+        }
+        else if(result.equals("done:0"))
+            Toast.makeText(getApplicationContext(),"no classes yet",Toast.LENGTH_SHORT).show();
+        else Toast.makeText(getApplicationContext(),"no connection",Toast.LENGTH_SHORT).show();
+        gd.cancel(true);
+    }
 }
 
 

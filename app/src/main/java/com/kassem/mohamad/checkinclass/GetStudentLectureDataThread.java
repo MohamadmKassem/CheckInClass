@@ -29,7 +29,7 @@ class GetStudentLectureDataThread extends AsyncTask<Integer, Void, String> {
     protected String doInBackground(Integer...params) {
         PrintWriter out;
         Scanner in;
-        Socket s;
+        Socket s=null;
         int classid =(int)params[0];
         try {
             //s = new Socket("192.168.43.157",8082);
@@ -54,18 +54,21 @@ class GetStudentLectureDataThread extends AsyncTask<Integer, Void, String> {
                 lc2.add(SL);
                 more=in.nextLine();
             }
-            //m.refreshProfData(true);
+            s.close();
             return "done:"+nb;
         }
         catch (Exception e)
         {
             //error=e.getMessage();
-            return "failure";
+            try {if(s!=null)s.close();}
+            catch (IOException e1) {}
+            finally {return "failure";}
         }
 
     }
     protected void onPostExecute(String r) {
         super.onPostExecute(r);
         if(r!="")m.result=r;
+        m.finishGetLec();
     }
 }

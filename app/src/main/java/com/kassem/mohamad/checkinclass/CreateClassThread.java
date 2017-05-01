@@ -27,7 +27,7 @@ class CreateClassThread extends AsyncTask<String, Void, String> {
     protected String doInBackground(String...params) {
         PrintWriter out;
         Scanner in;
-        Socket s;
+        Socket s=null;
         try {
             //s = new Socket("192.168.43.157",8082);
 
@@ -45,17 +45,21 @@ class CreateClassThread extends AsyncTask<String, Void, String> {
             //DatagramPacket p;
             //p=new DatagramPacket(b,b.length,ip,8082);
             //D.send(p);
+            s.close();
             return r;
         }
         catch (Exception e)
         {
             //error=e.getMessage();
-            return "failure:0";
+            try {if(s!=null)s.close();}
+            catch (IOException e1) {}
+            finally {return "failure:0";}
         }
 
     }
     protected void onPostExecute(String r) {
         super.onPostExecute(r);
         if(r!="")m.result=r;
+        m.finishCreate();
     }
 }

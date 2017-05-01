@@ -3,6 +3,8 @@ package com.kassem.mohamad.checkinclass;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
@@ -30,8 +32,11 @@ public class SpeceficStudentClass extends AppCompatActivity {
     String result;
     SpeceficStudentClass m;
     String loc;
+    ArrayList<StudentLecture> lc2;
     final LocationListener locationListener=new MyLocationListener2(this);
-
+    GetStudentLectureDataThread gd;
+    SendPresenceThread ST;
+    LocationManager manager;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -40,7 +45,7 @@ public class SpeceficStudentClass extends AppCompatActivity {
         Intent I=getIntent();
         loc="";
 
-        LocationManager manager = (LocationManager) getSystemService(getApplicationContext().LOCATION_SERVICE);
+        manager = (LocationManager) getSystemService(getApplicationContext().LOCATION_SERVICE);
         if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER))
         {
             startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
@@ -52,14 +57,15 @@ public class SpeceficStudentClass extends AppCompatActivity {
             int i=reqpermission();
             try
             {
-                manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 50,0, locationListener);
+                manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1,0, locationListener);
+                //Location l=manager.getLastKnownLocation(manager.getBestProvider(new Criteria(),false));
+                //loc=l.getAltitude()+"//"+l.getLongitude();
                 Toast.makeText(getApplicationContext(), "use gps", Toast.LENGTH_LONG).show();
             }
             catch(SecurityException e)
             {
                 Toast.makeText(getApplicationContext(), "cannot use gps", Toast.LENGTH_LONG).show();
                 this.finish();
-
             }
         }
         m=this;
@@ -73,28 +79,24 @@ public class SpeceficStudentClass extends AppCompatActivity {
         //Toast.makeText(getApplicationContext(),"here",Toast.LENGTH_SHORT).show();
         //final ArrayList<Class> lc2 =new ArrayList<Class>();
         result="";
-        final ArrayList<StudentLecture> lc2=new ArrayList<StudentLecture>();
-        final GetStudentLectureDataThread gd=new GetStudentLectureDataThread(this,lc2);
+        lc2=new ArrayList<StudentLecture>();
+        gd=new GetStudentLectureDataThread(this,lc2);
         gd.execute(classid);
-        new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run()
-                    {
-                        if(!result.equals("done:0") && !result.equals("failure"))
-                        {
-                            if(lc2.size()!=0) {
-                                LectureAdapter LA= new LectureAdapter(lc2);
-                                ListView LectureListView = (ListView) findViewById(R.id.LV2);
-                                LectureListView.setAdapter(LA);
-                            }
-                        }
-                        else if(result.equals("done:0"))
-                            Toast.makeText(getApplicationContext(),"no classes yet",Toast.LENGTH_SHORT).show();
-                        else Toast.makeText(getApplicationContext(),"no connection",Toast.LENGTH_SHORT).show();
-                        gd.cancel(true);
-                    }
-                }, 3500);
-
+    }
+    public void finishGetLec()
+    {
+        if(!result.equals("done:0") && !result.equals("failure"))
+        {
+            if(lc2.size()!=0) {
+                LectureAdapter LA= new LectureAdapter(lc2);
+                ListView LectureListView = (ListView) findViewById(R.id.LV2);
+                LectureListView.setAdapter(LA);
+            }
+        }
+        else if(result.equals("done:0"))
+            Toast.makeText(getApplicationContext(),"no classes yet",Toast.LENGTH_SHORT).show();
+        else Toast.makeText(getApplicationContext(),"no connection",Toast.LENGTH_SHORT).show();
+        gd.cancel(true);
     }
     class LectureAdapter extends BaseAdapter {
 
@@ -150,28 +152,39 @@ public class SpeceficStudentClass extends AppCompatActivity {
                             ImageView i=(ImageView)v;
                             i.setClickable(false);
                             result="";
-                            final SendPresenceThread ST=new SendPresenceThread(m,loc,email,(int)i.getTag());
-                            ST.execute();
-                            new android.os.Handler().postDelayed(
-                                    new Runnable() {
-                                        public void run()
-                                        {
-                                            if(result.equals("done"))
-                                                refreshStudentTab();
-                                            else {
+                            try
+                            {
+                                //manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5,0, locationListener);
+                                //Location l=manager.getLastKnownLocation(manager.getBestProvider(new Criteria(),false));
+                                //loc=l.getAltitude()+"//"+l.getLongitude();
+                                ST=new SendPresenceThread(m,loc,email,(int)i.getTag());
+                                ST.execute();
+                                //Toast.makeText(getApplicationContext(), "use gps", Toast.LENGTH_LONG).show();
+                            }
+                            catch(SecurityException e)
+                            {
+                                //Toast.makeText(getApplicationContext(), "cannot use gps", Toast.LENGTH_LONG).show();
+                                m.finish();
+                            }
 
-                                                Toast.makeText(getApplication(),result,Toast.LENGTH_SHORT).show();
-                                                refreshStudentTab();
-                                            }
-                                            ST.cancel(true);
-                                        }
-                                    }, 3500);
+
                         }
                     });
                 }
             }
             return view1;
         }
+    }
+    public void finishSendPresence()
+    {
+        if(result.equals("done"))
+            refreshStudentTab();
+        else {
+
+            Toast.makeText(getApplication(),result,Toast.LENGTH_SHORT).show();
+            refreshStudentTab();
+        }
+        ST.cancel(true);
     }
     public int reqpermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {

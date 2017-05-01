@@ -26,6 +26,11 @@ public class request_lectures extends AppCompatActivity {
     public ArrayList<Student> AlS;
     public String result;
     public request_lectures m;
+    GetRequestThread GRT;
+    answerToReqThread aR;
+    String email;
+    answerToReqThread a;
+    DatabaseHandler db;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,26 +40,23 @@ public class request_lectures extends AppCompatActivity {
         AlS =new ArrayList<Student>();
         GetData();
         m=this;
+        db=new DatabaseHandler(this);
         //RefreshData();
     }
     public void GetData()
     {
         result="";
-        final GetRequestThread GRT=new GetRequestThread(this,classid);
+        GRT=new GetRequestThread(this,classid);
         GRT.execute();
-        new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run()
-                    {
-                        //Toast.makeText(getApplicationContext(),result,Toast.LENGTH_SHORT).show();
-                        if(result.equals("done:0"))
-                         Toast.makeText(getApplicationContext(),"no request found",Toast.LENGTH_SHORT).show();
-                        else if(result.equals("no connection"))
-                            Toast.makeText(getApplicationContext(),"no connection",Toast.LENGTH_SHORT).show();
-                        else RefreshData();
-                        GRT.cancel(true);
-                    }
-                }, 2500);
+    }
+    public void finishGet()
+    {
+        if(result.equals("done:0"))
+            Toast.makeText(getApplicationContext(),"no request found",Toast.LENGTH_SHORT).show();
+        else if(result.equals("no connection"))
+            Toast.makeText(getApplicationContext(),"no connection",Toast.LENGTH_SHORT).show();
+        else RefreshData();
+        GRT.cancel(true);
     }
     public void RefreshData()
     {
@@ -105,67 +107,64 @@ public class request_lectures extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     Button Btn1=(Button)v;
-                    final String email=(String)Btn1.getTag();
-                    final answerToReqThread a=new answerToReqThread(m);
-                    a.execute("DeleteReq--#--"+classid+"--#--"+email);
+                    email=(String)Btn1.getTag();
+                    a=new answerToReqThread(m);
                     result="";
-                    new android.os.Handler().postDelayed(
-                            new Runnable() {
-                                public void run()
-                                {
-                                    if(result.equals("done"))
-                                    {
-                                        int i=0;
-                                        for(i=0;i<AlS.size();i++)
-                                        {
-                                            if((AlS.get(i).email).equals(email))
-                                            {
-                                                AlS.remove(i);
-                                                break;
-                                            }
-                                        }
-                                        RefreshData();
-                                    }
-                                    else
-                                        Toast.makeText(getApplicationContext(),"failed",Toast.LENGTH_SHORT).show();
-                                    a.cancel(true);
-                                }
-                            }, 2500);
+                    a.execute("DeleteReq--#--"+classid+"--#--"+email);
                 }
             });
             bt2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Button Btn1=(Button)v;
-                    final String email=(String)Btn1.getTag();
-                    final answerToReqThread a=new answerToReqThread(m);
-                    a.execute("AcceptReq--#--"+classid+"--#--"+email);
+                    email=(String)Btn1.getTag();
+                    aR=new answerToReqThread(m);
                     result="";
-                    new android.os.Handler().postDelayed(
-                            new Runnable() {
-                                public void run()
-                                {
-                                    if(result.equals("done"))
-                                    {
-                                        int i=0;
-                                        for(i=0;i<AlS.size();i++)
-                                        {
-                                            if((AlS.get(i).email).equals(email))
-                                            {
-                                                AlS.remove(i);
-                                                break;
-                                            }
-                                        }
-                                        RefreshData();
-                                    }
-                                    else
-                                        Toast.makeText(getApplicationContext(),"no connection",Toast.LENGTH_SHORT).show();
-                                    a.cancel(true);
-                                }
-                            }, 2500);
+                    aR.execute("AcceptReq--#--"+classid+"--#--"+email);
+
+
                 }
             });
             return view1;
         }
+    }
+    public void finishReject()
+    {
+        if(result.equals("done"))
+        {
+            int i=0;
+            for(i=0;i<AlS.size();i++)
+            {
+                if((AlS.get(i).email).equals(email))
+                {
+                    AlS.remove(i);
+                    break;
+                }
+            }
+            RefreshData();
+        }
+        else
+            Toast.makeText(getApplicationContext(),"failed",Toast.LENGTH_SHORT).show();
+        a.cancel(true);
+    }
+    public void finishAccResp()
+    {
+        if(result.equals("done"))
+        {
+            int i=0;
+            for(i=0;i<AlS.size();i++)
+            {
+                if((AlS.get(i).email).equals(email))
+                {
+                    AlS.remove(i);
+
+                    break;
+                }
+            }
+            RefreshData();
+        }
+        else
+            Toast.makeText(getApplicationContext(),"no connection",Toast.LENGTH_SHORT).show();
+        aR.cancel(true);
     }
 }

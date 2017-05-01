@@ -24,7 +24,7 @@ class SignUpThread extends AsyncTask<String, Void, String> {
     protected String doInBackground(String...params) {
         PrintWriter out;
         Scanner in;
-        Socket s;
+        Socket s=null;
         try {
             //s = new Socket("192.168.43.157",8082);
             s = new Socket();
@@ -34,18 +34,15 @@ class SignUpThread extends AsyncTask<String, Void, String> {
             out = new PrintWriter(s.getOutputStream(),true);
             out.println("signUp--#--"+params[0]+"--#--"+params[1]+"--#--"+params[2]);
             String r=in.nextLine();
-            //DatagramSocket D = new DatagramSocket();
-            //byte[] b ="hello".getBytes();
-            //InetAddress ip = InetAddress.getByName("192.168.43.153");
-            //DatagramPacket p;
-            //p=new DatagramPacket(b,b.length,ip,8082);
-            //D.send(p);
+            s.close();
             return r;
         }
         catch (Exception e)
         {
             //error=e.getMessage();
-            return "";
+            try {if(s!=null)s.close();}
+            catch (IOException e1) {}
+            finally {return "";}
         }
 
     }

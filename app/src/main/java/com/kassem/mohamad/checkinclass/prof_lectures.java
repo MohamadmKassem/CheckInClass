@@ -519,7 +519,7 @@ public void finishOpenClose()
             swt.setChecked(false);
         else
             swt.setChecked(true);
-        Toast.makeText(getApplicationContext(),"no connection", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(),result, Toast.LENGTH_SHORT).show();
     }
     O.cancel(true);
     progressDialog.dismiss();

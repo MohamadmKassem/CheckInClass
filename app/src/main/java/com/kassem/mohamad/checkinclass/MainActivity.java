@@ -219,6 +219,7 @@ public class MainActivity extends AppCompatActivity {
             outputStream.write(new String("").getBytes());
             outputStream.close();
             //this.onCreate(null);
+            stopService(new Intent(this,MyService.class));
             Intent intent = new Intent(this,MainActivity.class);
             startActivity(intent);
             finish();
@@ -284,6 +285,9 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else {
                     email = data.getData().toString();
+                    Intent In=new Intent(this,MyService.class);
+                    In.putExtra("email",email);
+                    startService(In);
                 }
             }
         }
@@ -626,9 +630,10 @@ public class MainActivity extends AppCompatActivity {
         }
     public void finishStudentClasses()
     {
-        if(!result.equals("done:0") && !result.equals("failure"))
+        if(!result.equals("failure"))
         {
-            if(lc2.size()!=0) {
+            if(result.equals("done:0"))
+                Toast.makeText(getApplicationContext(),"no classes yet",Toast.LENGTH_SHORT).show();
                 classesAdapter = new ClassesAdapter(lc2);
                 ListView classesListView = (ListView) findViewById(R.id.Student_class_linear_layout);
                 classesListView.setAdapter(classesAdapter);
@@ -645,10 +650,8 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 });
-            }
+
         }
-        else if(result.equals("done:0"))
-            Toast.makeText(getApplicationContext(),"no classes yet",Toast.LENGTH_SHORT).show();
         else Toast.makeText(getApplicationContext(),"no connection",Toast.LENGTH_SHORT).show();
         gd.cancel(true);
     }

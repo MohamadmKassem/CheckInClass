@@ -75,6 +75,7 @@ class UpdateRegistreThread2 extends AsyncTask<String, Void, String> {
         //if(r.split("//")[0].equals("profClasses"))
         // m.finishUpdate();
         //else m.finishUpdate();
+        m.students=m.db.getStudents(classid);
         m.refreshPageData();
     }
 }

@@ -32,20 +32,24 @@ public class MyReceiver extends BroadcastReceiver {
             // Toast.makeText(context, type+"  "+result , Toast.LENGTH_SHORT).show();
             if(type.equals("request"))
             {
-                Intent myIntent = new Intent(context, request_lectures.class);
-                myIntent.putExtra("ClassId",result.split("//")[1]);
                 Toast.makeText(context,"Broadcast:request",Toast.LENGTH_SHORT).show();
+                /*Intent myIntent = new Intent(context, request_lectures.class);
+                myIntent.putExtra("ClassId",result.split("//")[1]);
+
                 mBuilder.setContentTitle("request for registration");
                 mBuilder.setContentText(result.split("//")[0]+" want to registre on classid="+result.split("//")[1]);
                 mBuilder.setSmallIcon(R.drawable.button_shape);
                 mBuilder.setLargeIcon(picture);
-                mNotifyManager.notify(Integer.valueOf(result.split("//")[1]), mBuilder.build());
                 mBuilder.setContentIntent(
-                    PendingIntent.getActivity(
-                            context,
-                            0,
-                            myIntent,
-                            PendingIntent.FLAG_UPDATE_CURRENT));
+                        PendingIntent.getActivity(
+                                context,
+                                0,
+                                myIntent,
+                                PendingIntent.FLAG_UPDATE_CURRENT));
+                mNotifyManager.notify(1, mBuilder.build());*/
+
+                NewMessageNotification n=new NewMessageNotification();
+                n.notify(context,result,1);
             }
             else
                 if(type.equals("Accepted"))
@@ -56,33 +60,38 @@ public class MyReceiver extends BroadcastReceiver {
                     mBuilder.setContentText("you are accepted on course of id "+result);
                     mBuilder.setSmallIcon(R.drawable.button_shape);
                     mBuilder.setLargeIcon(picture);
-                    mNotifyManager.notify(Integer.valueOf(result), mBuilder.build());
-                    mBuilder.setContentIntent(
-                            PendingIntent.getActivity(
-                                    context,
-                                    0,
-                                    myIntent,
-                                    PendingIntent.FLAG_UPDATE_CURRENT));*/
-                    NewMessageNotification n=new NewMessageNotification();
-                    n.notify();
-                }
-            else if(type.equals("presence"))
-                {
-                    Toast.makeText(context,"Broadcast:presence",Toast.LENGTH_SHORT).show();
-                    Intent myIntent = new Intent(context, ProfPresence.class);
-                    myIntent.putExtra("lectureId",Integer.valueOf(result.split("//")[3]));
-                    mBuilder.setContentTitle("presence of class "+result.split("//")[2]);
-                    mBuilder.setContentText(Integer.valueOf(result.split("//")[0])+" of "+Integer.valueOf(result.split("//")[1]));
-                    mBuilder.setSmallIcon(R.drawable.button_shape);
-                    mBuilder.setLargeIcon(picture);
-                    mNotifyManager.notify(Integer.valueOf(result.split("//")[3]), mBuilder.build());
                     mBuilder.setContentIntent(
                             PendingIntent.getActivity(
                                     context,
                                     0,
                                     myIntent,
                                     PendingIntent.FLAG_UPDATE_CURRENT));
+                    mNotifyManager.notify(2, mBuilder.build());*/
+
+                    NewMessageNotification2 n=new NewMessageNotification2();
+                    n.notify(context,result,2);
                 }
+            else if(type.equals("presence"))
+                {
+                    Toast.makeText(context,"Broadcast:presence",Toast.LENGTH_SHORT).show();
+                    /*Intent myIntent = new Intent(context, ProfPresence.class);
+                    myIntent.putExtra("lectureId",Integer.valueOf(result.split("//")[3]));
+                    mBuilder.setContentTitle("presence of class "+result.split("//")[2]);
+                    mBuilder.setContentText(Integer.valueOf(result.split("//")[0])+" of "+Integer.valueOf(result.split("//")[1]));
+                    mBuilder.setSmallIcon(R.drawable.button_shape);
+                    mBuilder.setLargeIcon(picture);
+                    mBuilder.setContentIntent(
+                            PendingIntent.getActivity(
+                                    context,
+                                    0,
+                                    myIntent,
+                                    PendingIntent.FLAG_UPDATE_CURRENT));
+                    mNotifyManager.notify(Integer.valueOf(result.split("//")[3]), mBuilder.build());*/
+
+                    NewMessageNotification3 n=new NewMessageNotification3();
+                    n.notify(context,result,3);
+                }
+
         }
     }
 }

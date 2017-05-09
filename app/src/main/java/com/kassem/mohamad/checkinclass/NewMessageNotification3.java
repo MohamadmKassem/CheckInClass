@@ -60,7 +60,7 @@ public class NewMessageNotification3 {
                 // Set appropriate defaults for the notification light, sound,
                 // and vibration.
                 .setDefaults(Notification.DEFAULT_ALL)
-
+                //.setCategory("presence")
                 // Set required fields, including the small icon, the
                 // notification title, and text.
                 .setSmallIcon(R.drawable.ic_stat_new_message3)
@@ -72,7 +72,7 @@ public class NewMessageNotification3 {
 
                 // Use a default priority (recognized on devices running Android
                 // 4.1 or later)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                //.setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
                 // Provide a large icon, shown with the notification in the
                 // notification drawer on devices running Android 3.0 or later.
@@ -83,7 +83,7 @@ public class NewMessageNotification3 {
 
                 // Show a number. This is useful when stacking notifications of
                 // a single type.
-                .setNumber(number)
+                //.setNumber(number)
 
                 // If this notification relates to a past or upcoming event, you
                 // should set the relevant time information using the setWhen
@@ -128,7 +128,10 @@ public class NewMessageNotification3 {
                         null)
                 // Automatically dismiss the notification when it is touched.
                 .setAutoCancel(true);
-        notify(context, builder.build());
+        NotificationManager mNotifyManager;
+        mNotifyManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+        mNotifyManager.notify(Integer.valueOf(exampleString.split("//")[3]), builder.build());
+        //notify(context, builder.build());
     }
 
     @TargetApi(Build.VERSION_CODES.ECLAIR)

@@ -59,23 +59,6 @@ public class LoginActivity extends AppCompatActivity {
         result="";
         LT=new LoginThread(this);
         LT.execute(email,password);
-
-        /*new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run()
-                    {
-                        // On complete call either onLoginSuccess or onLoginFailed
-                         if(result.equals("LoginSuccess"))
-                             onLoginSuccess();
-                         else
-                            if(result.equals(""))
-                                onLoginFailed("No connection");
-                            else
-                                onLoginFailed(result);
-                       // LT.cancel(true);
-                        progressDialog.dismiss();
-                    }
-                }, 5000);*/
     }
 
     public void finishlogin()
@@ -84,6 +67,8 @@ public class LoginActivity extends AppCompatActivity {
             onLoginFailed("No connection");
         else if(result.equals("LoginSuccess"))
             onLoginSuccess();
+        else
+            onLoginFailed(result);
         LT.cancel(true);
         progressDialog.dismiss();
     }
@@ -91,7 +76,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_SIGNUP) {
             if (resultCode == RESULT_OK) {
-
                 // TODO: Implement successful signup logic here
                 // By default we just finish the Activity and log them in automatically
                 this.finish();
@@ -128,7 +112,6 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onLoginFailed(String result) {
         Toast.makeText(getBaseContext(), result, Toast.LENGTH_LONG).show();
-
         loginButton.setEnabled(true);
     }
 

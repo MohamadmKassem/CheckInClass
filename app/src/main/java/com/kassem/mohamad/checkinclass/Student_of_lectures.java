@@ -1,10 +1,12 @@
 package com.kassem.mohamad.checkinclass;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Size;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
@@ -22,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Student_of_lectures extends AppCompatActivity {
 
@@ -30,6 +33,7 @@ public class Student_of_lectures extends AppCompatActivity {
     Student_of_lectures m;
     DatabaseHandler db;
     ArrayList<Student> students;
+    String Studentemail;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -140,7 +144,49 @@ public class Student_of_lectures extends AppCompatActivity {
             fullname.setText(s.get(i).fullname);
             // Toast.makeText(getApplicationContext(),presence.get(i).fullname,Toast.LENGTH_SHORT).show();
             email.setText(s.get(i).email);
+            view1.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    TextView t=(TextView)v.findViewById(R.id.registreEmail);
+                    Studentemail=t.getText().toString();
+                    AlertDialog diaBox = AskOption(classid);
+                    diaBox.show();
+                    return false;
+                }
+            });
             return view1;
         }
+    }
+    private AlertDialog AskOption(int id)
+    {
+        final int classid=id;
+        final Date d=new Date();
+        AlertDialog myQuittingDialogBox =new AlertDialog.Builder(this)
+                //set message, title, and icon
+                .setTitle("delete student")
+                .setMessage("are you sure want to delete this student ")
+
+
+                .setPositiveButton("yes", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        DeleteStudentThread d=new DeleteStudentThread(m,classid,Studentemail);
+                        d.execute();
+                        dialog.dismiss();
+                    }
+                })
+
+
+
+                .setNegativeButton("no", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        dialog.dismiss();
+
+                    }
+                })
+                .create();
+        return myQuittingDialogBox;
+
     }
 }

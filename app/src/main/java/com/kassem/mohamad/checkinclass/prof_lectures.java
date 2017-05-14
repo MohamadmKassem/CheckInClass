@@ -298,7 +298,8 @@ public class prof_lectures extends AppCompatActivity {
                         changeLectureState(id,v,0,0);
                     if(c.isChecked())
                     {
-                        AlertDialog diaBox = AskOption1(id,v);
+                        //AlertDialog diaBox = AskOption1(id,v);
+                        AlertDialog diaBox = AskOption2(id,v,100);
                         Window window = diaBox.getWindow();
                         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
                                 WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);

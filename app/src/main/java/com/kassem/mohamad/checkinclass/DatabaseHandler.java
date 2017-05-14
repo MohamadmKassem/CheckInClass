@@ -218,7 +218,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close();
         return con;
     }
-
     public ArrayList<Student> getStudents(int classid)
     {
         ArrayList<Student> s=new ArrayList<Student>();
@@ -254,6 +253,22 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         db.close();
         return con;
+    }
+    public void deleteStudent(int classid,String email)
+    {
+        SQLiteDatabase db=this.getWritableDatabase();
+        SQLiteDatabase db2=this.getReadableDatabase();
+        String query="select * from Lectures where classId="+classid;
+        Cursor c=db2.rawQuery(query,null);
+        //ArrayList<Class> con=new ArrayList<Class>();
+        if(c.moveToFirst())
+        {
+            do
+            {
+                db.delete("Presence","LectureId="+c.getInt(0)+" AND Email='"+email+"'",null);
+            }while(c.moveToNext());
+        }
+        db.delete("registre","classID="+classid+" AND Email='"+email+"'",null);
     }
     public void deleteLecture(int id)
     {

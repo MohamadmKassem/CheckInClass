@@ -439,7 +439,7 @@ public class prof_lectures extends AppCompatActivity {
 
                         changeLectureState(i, a, m,distance);
 
-                        Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
 
                     }
                 })

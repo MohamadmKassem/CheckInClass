@@ -70,7 +70,7 @@ class SendPresenceThread extends AsyncTask<String, Void, String> {
                 {
                     out.println("fail");
                     s.close();
-                    return "cannot add presence "+dis;
+                    return "cannot add presence";
                 }
                 else{
                     out.println("add");
@@ -78,7 +78,7 @@ class SendPresenceThread extends AsyncTask<String, Void, String> {
                     if(in.nextLine().equals("done"))
                     {
                         s.close();
-                        return "done " + dis;
+                        return "done";
                     }
                     else
                     {

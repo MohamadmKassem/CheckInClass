@@ -5,7 +5,7 @@
     <color name="colorAccent">#FF4081</color>
 
     <color name="primary">#E43F3F</color>
-    <color name="primary_dark">#E12929</color>
+    <color name="primary_dark">#e12929</color>
     <color name="primary_darker">#CC1D1D</color>
     <color name="accent">#FFFFFF</color>
 
@@ -21,6 +21,7 @@
 
     <color name="primary1">#E12929</color>
     <color name="background">#383636</color>
+    <color name="background1.5">#615d5d</color>
     <color name="background2">#4b4848</color>
     <color name="background3">#302e2e</color>
     <color  name="green">#00cc00</color>

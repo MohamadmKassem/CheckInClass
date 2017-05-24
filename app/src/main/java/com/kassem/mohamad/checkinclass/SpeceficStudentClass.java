@@ -60,7 +60,7 @@ public class SpeceficStudentClass extends AppCompatActivity {
                 manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1,0, locationListener);
                 //Location l=manager.getLastKnownLocation(manager.getBestProvider(new Criteria(),false));
                 //loc=l.getAltitude()+"//"+l.getLongitude();
-                Toast.makeText(getApplicationContext(), "use gps", Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(), "use gps", Toast.LENGTH_LONG).show();
             }
             catch(SecurityException e)
             {
@@ -72,6 +72,10 @@ public class SpeceficStudentClass extends AppCompatActivity {
         db=new DatabaseHandler(this);
         classid=Integer.valueOf(I.getStringExtra("ClassId"));
         email=I.getStringExtra("email");
+        String classname=I.getStringExtra("className");
+        TextView t=(TextView)findViewById(R.id.classN);
+        t.setText(classname);
+        //this.getActionBar().setTitle(classname);
         refreshStudentTab();
     }
 
@@ -134,16 +138,16 @@ public class SpeceficStudentClass extends AppCompatActivity {
             ImageView IV=(ImageView)view1.findViewById(R.id.img);
             if(lectures.get(i).here)
             {
-                int idExitImage = getResources().getIdentifier("com.kassem.mohamad.checkinclass:drawable/ic_done_all_black_24dp" , null, null);
+                int idExitImage = getResources().getIdentifier("com.kassem.mohamad.checkinclass:drawable/ic_adjust_black_24dp" , null, null);
                 IV.setImageResource(idExitImage);
             }
             else
             {
-                IV.setTag(lectures.get(i).id);
-                int idExitImage = getResources().getIdentifier("com.kassem.mohamad.checkinclass:drawable/ic_exposure_plus_1_black_24dp" , null, null);
-                IV.setImageResource(idExitImage);
+
                 if(lectures.get(i).open)
-                {
+                {   IV.setTag(lectures.get(i).id);
+                    int idExitImage = getResources().getIdentifier("com.kassem.mohamad.checkinclass:drawable/ic_adjust_black2_24dp" , null, null);
+                    IV.setImageResource(idExitImage);
                     IV.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -177,14 +181,9 @@ public class SpeceficStudentClass extends AppCompatActivity {
     }
     public void finishSendPresence()
     {
-        if(result.equals("done"))
-            refreshStudentTab();
-        else {
-
-
             Toast.makeText(getApplication(),result,Toast.LENGTH_SHORT).show();
             refreshStudentTab();
-        }
+
         ST.cancel(true);
     }
     public int reqpermission() {

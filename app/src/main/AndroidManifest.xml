@@ -38,14 +38,16 @@
         <activity android:name=".SpeceficClass" />
         <activity
             android:name=".Student_of_lectures"
-            android:label="@string/title_activity_student_of_lectures"
+            android:label="Students of class"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".prof_lectures"
-            android:label="@string/title_activity_prof_lectures"
+            android:label="lectures of class"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".request_lectures" />
-        <activity android:name=".SpeceficStudentClass" />
+        <activity android:name=".SpeceficStudentClass"
+            android:theme="@style/AppTheme.Dark"
+            />
         <activity android:name=".ProfPresence" />
 
 
@@ -66,7 +68,6 @@
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                3
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>

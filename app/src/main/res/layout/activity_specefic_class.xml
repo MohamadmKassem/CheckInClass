@@ -4,39 +4,95 @@
     android:id="@+id/activity_specefic_class"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:orientation="vertical"
-    tools:context="com.kassem.mohamad.checkinclass.SpeceficClass">
 
+    android:background="@color/background2"
+    android:orientation="vertical"
+    tools:context="com.kassem.mohamad.checkinclass.SpeceficClass"
+    android:weightSum="1">
+    <TextView
+        android:id="@+id/speName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="25dip"
+        android:textColor="@color/primary_dark" />
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"></LinearLayout>
-    <TextView
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="30dp"
+        android:background="@color/background1.5">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/lectures"/>
+        <TextView
         android:id="@+id/lecturesOfClass"
         android:text="Lectures Of Class"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:gravity="center"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
         android:textSize="16dip"
         android:layout_weight="1" />
+        <ImageView
+            android:background="@color/background1.5"
+            android:layout_gravity="right"
+            android:src="@drawable/ic_chevron_right_black_24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="30dp"
+        android:background="@color/background1.5">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/student"/>
     <TextView
         android:id="@+id/StudentsOfClass"
         android:text="Students Of Class"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:gravity="center"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
         android:textSize="16dip"
         android:layout_weight="1" />
+        <ImageView
+            android:background="@color/background1.5"
+            android:layout_gravity="right"
+            android:src="@drawable/ic_chevron_right_black_24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/background1.5"
+        android:layout_marginBottom="30dp">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/request"/>
     <TextView
         android:id="@+id/StudentsRequest"
-        android:text="Students Request`"
+        android:text="Students Request"
         android:layout_width="match_parent"
-        android:gravity="center"
+        android:textColor="@color/white"
         android:textSize="16dip"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_weight="1" />
+        <ImageView
+            android:background="@color/background1.5"
+            android:layout_gravity="right"
+            android:src="@drawable/ic_chevron_right_black_24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            />
+
+        </LinearLayout>
+
 </LinearLayout>

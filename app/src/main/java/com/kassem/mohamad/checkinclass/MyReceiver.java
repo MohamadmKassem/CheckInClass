@@ -24,7 +24,7 @@ public class MyReceiver extends BroadcastReceiver {
             //int id=intent.getIntExtra("id",0);
             String result = intent.getStringExtra("result");
             String type=intent.getStringExtra("type");
-            Toast.makeText(context,"Broadcast:receve...",Toast.LENGTH_SHORT).show();
+            //Toast.makeText(context,"Broadcast:receve...",Toast.LENGTH_SHORT).show();
             NotificationCompat.Builder mBuilder;
             NotificationManager mNotifyManager;
             mNotifyManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
@@ -32,7 +32,7 @@ public class MyReceiver extends BroadcastReceiver {
             // Toast.makeText(context, type+"  "+result , Toast.LENGTH_SHORT).show();
             if(type.equals("request"))
             {
-                Toast.makeText(context,"Broadcast:request",Toast.LENGTH_SHORT).show();
+//                Toast.makeText(context,"Broadcast:request",Toast.LENGTH_SHORT).show();
                 /*Intent myIntent = new Intent(context, request_lectures.class);
                 myIntent.putExtra("ClassId",result.split("//")[1]);
 
@@ -54,7 +54,7 @@ public class MyReceiver extends BroadcastReceiver {
             else
                 if(type.equals("Accepted"))
                 {
-                    Toast.makeText(context,"Broadcast:Accepted",Toast.LENGTH_SHORT).show();
+  //                  Toast.makeText(context,"Broadcast:Accepted",Toast.LENGTH_SHORT).show();
                     /*Intent myIntent = new Intent(context, MainActivity.class);
                     mBuilder.setContentTitle("Accepted on class");
                     mBuilder.setContentText("you are accepted on course of id "+result);
@@ -73,7 +73,7 @@ public class MyReceiver extends BroadcastReceiver {
                 }
             else if(type.equals("presence"))
                 {
-                    Toast.makeText(context,"Broadcast:presence",Toast.LENGTH_SHORT).show();
+    //                Toast.makeText(context,"Broadcast:presence",Toast.LENGTH_SHORT).show();
                     /*Intent myIntent = new Intent(context, ProfPresence.class);
                     myIntent.putExtra("lectureId",Integer.valueOf(result.split("//")[3]));
                     mBuilder.setContentTitle("presence of class "+result.split("//")[2]);

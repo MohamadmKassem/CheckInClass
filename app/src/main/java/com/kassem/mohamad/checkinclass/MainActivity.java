@@ -5,16 +5,21 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.Toolbar;
 import android.content.Context;
+import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
@@ -202,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),"settings", Toast.LENGTH_LONG).show();
                 return true;
             case R.id.action_sign_out:
-                Toast.makeText(getApplicationContext(),"sign out", Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(),"sign out", Toast.LENGTH_LONG).show();
                 signOut();
                 return true;
             default:
@@ -297,20 +302,27 @@ public class MainActivity extends AppCompatActivity {
     private void addClass(){
         final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.search_class_linear_layout);
         linearLayout.removeAllViews();
-
-
         final EditText editText = new EditText(this);
+        editText.setTextColor(getResources().getColor(R.color.white));
         editText.setHint("Enter The ID");
+        editText.setHintTextColor(getResources().getColor(R.color.iron));
+        editText.getBackground().setColorFilter(getResources().getColor(R.color.primary_dark), PorterDuff.Mode.SRC_ATOP);
         editText.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayoutCompat.LayoutParams.WRAP_CONTENT,1));
-
         ImageButton searchButton = new ImageButton(this);
-        int idSearchbButton = getResources().getIdentifier("com.kassem.mohamad.checkinclass:drawable/ic_search_black_24dp" , null, null);
-        searchButton.setImageResource(idSearchbButton);
+        int idSearchButton = getResources().getIdentifier("com.kassem.mohamad.checkinclass:drawable/ic_search_black_24dp" , null, null);
+        searchButton.setImageResource(idSearchButton);
+        searchButton.setBackgroundResource(R.drawable.tags_rounded_corners);
+        GradientDrawable drawable = (GradientDrawable) searchButton.getBackground();
+        drawable.setColor(getResources().getColor(R.color.primary_dark));
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        params.setMargins(10, 10, 10, 0);
+        searchButton.setLayoutParams(params);
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // search for the new class
-
                try
                {
                     String id= editText.getText().toString();
@@ -325,10 +337,14 @@ public class MainActivity extends AppCompatActivity {
                catch(Exception e){}
             }
         });
-
         ImageButton exitButton = new ImageButton(this);
         int idExitImage = getResources().getIdentifier("com.kassem.mohamad.checkinclass:drawable/ic_close_black_24dp" , null, null);
         exitButton.setImageResource(idExitImage);
+        exitButton.setLayoutParams(params);
+        exitButton.setBackgroundResource(R.drawable.tags_rounded_corners);
+        drawable = (GradientDrawable) exitButton.getBackground();
+        drawable.setColor(getResources().getColor(R.color.primary_dark));
+
         exitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -348,14 +364,30 @@ public class MainActivity extends AppCompatActivity {
             LinearLayout newClassAdd  = new LinearLayout(m);
             newClassAdd.setOrientation(LinearLayout.VERTICAL);
             TextView newClass = new TextView(m);
-            newClass.setText(result.split(":")[2]);
+            newClass.setText("class :"+result.split(":")[2]);
+            newClass.setTextColor(Color.WHITE);
             TextView prof = new TextView(m);
-            prof.setText(result.split(":")[1]);
+            prof.setText("professor :"+result.split(":")[1]);
+            prof.setTextColor(Color.WHITE);
             newClassAdd.addView(newClass);
             newClassAdd.addView(prof);
 
             ImageButton register = new ImageButton(m);
             int idSearchbButton = getResources().getIdentifier("com.kassem.mohamad.checkinclass:drawable/ic_add_box_black_24dp" , null, null);
+            //Button register=new Button(this);
+            //register.setText("send Request");
+            //register.setTextColor(Color.WHITE);
+            //register.setTextSize(TypedValue.COMPLEX_UNIT_PX, 25);
+            //register.setHeight(100);
+            //register.setWidth(200);
+            register.setBackgroundResource(R.drawable.tags_rounded_corners);
+            GradientDrawable drawable = (GradientDrawable) register.getBackground();
+            drawable.setColor(getResources().getColor(R.color.primary_dark));
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+            params.setMargins(10, 10, 10, 0);
+            register.setLayoutParams(params);
             register.setImageResource(idSearchbButton);
             register.setTag(Integer.valueOf(result.split(":")[3]));
             register.setOnClickListener(new View.OnClickListener()
@@ -366,7 +398,6 @@ public class MainActivity extends AppCompatActivity {
                     ImageButton b=(ImageButton)view;
                     int id=(int)b.getTag();
                     sendrequest(id);
-
                 }
             });
 
@@ -406,11 +437,21 @@ public class MainActivity extends AppCompatActivity {
         final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.prof_linear_layout);
         linearLayout.removeAllViews();
         final EditText editText = new EditText(this);
+        editText.setTextColor(getResources().getColor(R.color.white));
         editText.setHint("Class name");
+        editText.setHintTextColor(getResources().getColor(R.color.iron));
         editText.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayoutCompat.LayoutParams.WRAP_CONTENT,1));
         ImageButton createButton = new ImageButton(this);
         int idButton = getResources().getIdentifier("com.kassem.mohamad.checkinclass:drawable/ic_add_box_black_24dp" , null, null);
         createButton.setImageResource(idButton);
+        createButton.setBackgroundResource(R.drawable.tags_rounded_corners);
+        GradientDrawable drawable = (GradientDrawable) createButton.getBackground();
+        drawable.setColor(getResources().getColor(R.color.primary_dark));
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        params.setMargins(10, 10, 10, 0);
+        createButton.setLayoutParams(params);
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -440,6 +481,10 @@ public class MainActivity extends AppCompatActivity {
         ImageButton exitButton = new ImageButton(this);
         int idExitImage = getResources().getIdentifier("com.kassem.mohamad.checkinclass:drawable/ic_close_black_24dp" , null, null);
         exitButton.setImageResource(idExitImage);
+        exitButton.setBackgroundResource(R.drawable.tags_rounded_corners);
+        drawable = (GradientDrawable) exitButton.getBackground();
+        drawable.setColor(getResources().getColor(R.color.primary_dark));
+        exitButton.setLayoutParams(params);
         exitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -592,14 +637,17 @@ public class MainActivity extends AppCompatActivity {
             TextView nameTextView = (TextView) view1.findViewById(R.id.classname);
             TextView idTextView = (TextView) view1.findViewById(R.id.classid);
             nameTextView.setText(createdClasses.get(i).getName());
-            idTextView.setText(createdClasses.get(i).getId());
+            idTextView.setText("class Id :"+createdClasses.get(i).getId());
+            nameTextView.setPadding(20,0,0,0);
+            idTextView.setPadding(20,0,0,20);
             if(position==1)
             {
                 view1.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
                         TextView classid = (TextView) v.findViewById(R.id.classid);
-                        int CI=Integer.valueOf(classid.getText().toString());
+                        //Toast.makeText(getApplicationContext(),classid.getText().toString(),Toast.LENGTH_SHORT).show();
+                        int CI=Integer.valueOf(classid.getText().toString().split(":")[1]);
                         AlertDialog diaBox = AskOption(CI);
                         diaBox.show();
                         return false;
@@ -612,7 +660,7 @@ public class MainActivity extends AppCompatActivity {
                         TextView classid = (TextView) v.findViewById(R.id.classid);
                         Intent I=new Intent(m,SpeceficClass.class);
                         I.putExtra("ClassName",className.getText().toString());
-                        I.putExtra("ClassId",classid.getText().toString());
+                        I.putExtra("ClassId",classid.getText().toString().split(":")[1]);
                         startActivity(I);
                     }
                 });
@@ -644,9 +692,10 @@ public class MainActivity extends AppCompatActivity {
                         TextView classid = (TextView) view.findViewById(R.id.classid);
                         Intent I = new Intent(m, SpeceficStudentClass.class);
                         I.putExtra("email", email);
-                        I.putExtra("ClassId", classid.getText().toString());
+                        I.putExtra("ClassId", classid.getText().toString().split(":")[1]);
+                        I.putExtra("className",className.getText().toString());
                         startActivity(I);
-                        //Toast.makeText(getApplicationContext(),"!!!",Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(),email+"  "+classid.getText().toString().split(":")[1],Toast.LENGTH_SHORT).show();
 
                     }
                 });

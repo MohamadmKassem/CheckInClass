@@ -68,31 +68,12 @@ public class ProfPresence extends AppCompatActivity {
             PresenceAdapter l = new PresenceAdapter(a);
             final TextView t=(TextView) findViewById(R.id.presence);
 
-            t.setBackgroundColor(getResources().getColor(R.color.green));
+            t.setBackgroundColor(getResources().getColor(R.color.background2));
             final int p=db.getPresenceCount(LectureId);
-            t.setText("presence:"+p);
-
-            new android.os.Handler().postDelayed(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            t.setBackgroundColor(getResources().getColor(R.color.red));
-                            final int np=db.getnotPresenceCount(LectureId);
-                            t.setText("not presence:"+np);
-                            new android.os.Handler().postDelayed(
-                                    new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            t.setBackgroundColor(getResources().getColor(R.color.white));
-                                            int s=p+np;
-                                            t.setText(p+"/"+s);
-                                        }
-                                    }
-                                    , 2000);
-                        }
-                    }
-                    , 2000);
-
+            final int np=db.getnotPresenceCount(LectureId);
+            int sum=p+np;
+            t.setText("presence : "+p+" of "+sum);
+            t.setTextColor(getResources().getColor(R.color.white));
             ListView lv = (ListView) findViewById(R.id.LV3);
             lv.setAdapter(l);
         }

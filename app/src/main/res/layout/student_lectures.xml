@@ -14,15 +14,15 @@
         android:layout_width="0dp"
         android:layout_weight="2"
         android:layout_height="wrap_content"
-        android:textSize="30dp"/>
-
+        android:textSize="20dp"/>
+       <View android:layout_width="0dp"
+           android:layout_height="match_parent"
+           android:layout_weight="1" />
        <ImageView
             android:id="@+id/img"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:layout_alignRight="@id/lectureNb"
-            android:paddingLeft="50dp"/>
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignRight="@id/lectureNb" />
     </LinearLayout>
     <TextView
         android:textSize="15dp"

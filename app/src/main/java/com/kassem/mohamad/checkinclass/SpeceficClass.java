@@ -25,7 +25,9 @@ public class SpeceficClass extends AppCompatActivity {
 
         className=I.getStringExtra("ClassName");
         classId=I.getStringExtra("ClassId");
-        Toast.makeText(getApplicationContext(), "ID: " + classId+ ", Name: " + className, Toast.LENGTH_SHORT).show();
+        TextView t=(TextView)findViewById(R.id.speName);
+        t.setText(className);
+        //Toast.makeText(getApplicationContext(), "ID: " + classId+ ", Name: " + className, Toast.LENGTH_SHORT).show();
 
         T1=(TextView) findViewById(R.id.lecturesOfClass);
         T2=(TextView) findViewById(R.id.StudentsOfClass);
@@ -38,15 +40,13 @@ public class SpeceficClass extends AppCompatActivity {
                 I.putExtra("ClassName",className);
                 I.putExtra("ClassId",classId);
                 startActivity(I);
-                //Toast.makeText(getApplicationContext(), "ID: " + classid.getText().toString() + ", Name: " + className.getText().toString(), Toast.LENGTH_SHORT).show();
-
+                //Toast.makeText(getApplicationContext(), "ID: " + classId+ ", Name: " + className, Toast.LENGTH_SHORT).show();
             }
         });
         T2.setOnClickListener(new AdapterView.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent I=new Intent(S,Student_of_lectures.class);
-
                 I.putExtra("ClassName",className);
                 I.putExtra("ClassId",classId);
                 startActivity(I);

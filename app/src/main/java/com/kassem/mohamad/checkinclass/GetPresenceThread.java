@@ -31,8 +31,7 @@ class GetPresenceThread extends AsyncTask<Integer, Void, String> {
         try {
             s=new Socket();
             //s.connect(new InetSocketAddress("192.168.43.157",8082),4000); // alaa server
-            s.connect(new InetSocketAddress("192.168.0.100",8082),2000); //alaa server by wifi
-            //s.connect(new InetSocketAddress("192.168.1.66",8082),4000); // mohamad server
+            s.connect(new InetSocketAddress(m.getResources().getString(R.string.server_ip),8082),4000);
             ArrayList<presence> AP=new ArrayList<presence>();
             in =new Scanner(s.getInputStream());
             out = new PrintWriter(s.getOutputStream(),true);

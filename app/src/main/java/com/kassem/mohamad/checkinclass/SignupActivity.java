@@ -2,6 +2,8 @@ package com.kassem.mohamad.checkinclass;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -82,7 +84,10 @@ public class SignupActivity extends AppCompatActivity {
 
     public void onSignupSuccess() {
         signupButton.setEnabled(true);
-        String loginfile = "login";
+        Intent data = new Intent();
+        data.setData(Uri.parse(mailAddress));
+        setResult(RESULT_OK, data);
+        /*String loginfile = "login";
         FileOutputStream outputStream;
         try{
             outputStream = openFileOutput(loginfile, Context.MODE_PRIVATE);
@@ -92,7 +97,7 @@ public class SignupActivity extends AppCompatActivity {
         catch (Exception ex){
 
         }
-        setResult(RESULT_OK, null);
+        setResult(RESULT_OK, null);*/
         finish();
     }
 

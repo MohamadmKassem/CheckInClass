@@ -7,6 +7,8 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -22,10 +24,19 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+
 import java.util.ArrayList;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+public class SpeceficStudentClass extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
-public class SpeceficStudentClass extends AppCompatActivity {
-
+    GoogleApiClient googleApiClient; // lib com.google.android.gms:play-services
+    Location location;
     int classid;
     String email;
     DatabaseHandler db;
@@ -33,7 +44,7 @@ public class SpeceficStudentClass extends AppCompatActivity {
     SpeceficStudentClass m;
     String loc;
     ArrayList<StudentLecture> lc2;
-    final LocationListener locationListener=new MyLocationListener2(this);
+    LocationListener locationListener;
     GetStudentLectureDataThread gd;
     SendPresenceThread ST;
     LocationManager manager;
@@ -42,31 +53,28 @@ public class SpeceficStudentClass extends AppCompatActivity {
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_specefic_student_class);
+        if (googleApiClient == null) {
+            googleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
         Intent I=getIntent();
         loc="";
-
+        locationListener=null;
         manager = (LocationManager) getSystemService(getApplicationContext().LOCATION_SERVICE);
         if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER))
         {
+            Toast.makeText(this,"turn on gps",Toast.LENGTH_SHORT).show();
             startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
             this.finish();
         }
         else
         {
-            //LocationListener locationListener = new MyLocationListener(this);
             int i=reqpermission();
-            try
-            {
-                manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1,0, locationListener);
-                //Location l=manager.getLastKnownLocation(manager.getBestProvider(new Criteria(),false));
-                //loc=l.getAltitude()+"//"+l.getLongitude();
-                //Toast.makeText(getApplicationContext(), "use gps", Toast.LENGTH_LONG).show();
-            }
-            catch(SecurityException e)
-            {
-                Toast.makeText(getApplicationContext(), "cannot use gps", Toast.LENGTH_LONG).show();
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
                 this.finish();
-            }
         }
         m=this;
         db=new DatabaseHandler(this);
@@ -77,6 +85,57 @@ public class SpeceficStudentClass extends AppCompatActivity {
         t.setText(classname);
         //this.getActionBar().setTitle(classname);
         refreshStudentTab();
+    }
+    @Override
+    public void onStart() {
+        googleApiClient.connect();
+
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        googleApiClient.disconnect();
+        super.onStop();
+    }
+    public void onConnected(@Nullable Bundle bundle) {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+
+        if(location != null)
+            loc="" + location.getAltitude() + "//" + location.getLongitude();
+
+
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(3000);
+
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, new com.google.android.gms.location.LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                if(location != null)
+                    loc="" + location.getAltitude() + "//" + location.getLongitude();
+            }
+        });
     }
 
     public void refreshStudentTab() {
@@ -98,10 +157,22 @@ public class SpeceficStudentClass extends AppCompatActivity {
             }
         }
         else if(result.equals("done:0"))
-            Toast.makeText(getApplicationContext(),"no classes yet",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),"no lectures yet",Toast.LENGTH_SHORT).show();
         else Toast.makeText(getApplicationContext(),"no connection",Toast.LENGTH_SHORT).show();
         gd.cancel(true);
     }
+
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
     class LectureAdapter extends BaseAdapter {
 
         ArrayList<StudentLecture> lectures = new ArrayList<StudentLecture>();

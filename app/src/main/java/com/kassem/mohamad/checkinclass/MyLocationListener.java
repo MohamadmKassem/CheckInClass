@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.widget.Toast;
 
 /**
  * Created by ALAA on 15/3/2017.
@@ -28,7 +29,9 @@ public class MyLocationListener implements LocationListener {
     public void onLocationChanged(Location location) {
         //a.loc=location.toString();
        // location.dis
-        a.loc=""+location.getAltitude()+"//"+location.getLongitude();
+        a.loc=""+location.getLatitude()+"//"+location.getLongitude();
+        //Toast.makeText(a,""+location.getLatitude()+"//"+location.getLongitude(),Toast.LENGTH_SHORT).show();
+
         //a.loc+=location.getLongitude();
     }
 

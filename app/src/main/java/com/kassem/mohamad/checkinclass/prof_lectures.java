@@ -45,6 +45,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static android.R.attr.data;
 import com.google.android.gms.common.ConnectionResult;
@@ -93,6 +94,7 @@ public class prof_lectures extends AppCompatActivity implements GoogleApiClient.
         db=new DatabaseHandler(this);
         m=this;
         loc="";
+
          manager = (LocationManager) getSystemService(getApplicationContext().LOCATION_SERVICE);
         if(!manager.isProviderEnabled(LocationManager.GPS_PROVIDER))
         {
@@ -100,11 +102,18 @@ public class prof_lectures extends AppCompatActivity implements GoogleApiClient.
             startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
             this.finish();
         }
-        else
-        {
-            int i=reqpermission();
+        else {
+            int i = reqpermission();
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
                 this.finish();
+
+            try{locationListener=new MyLocationListener(this);
+            manager.requestLocationUpdates(
+                    LocationManager.GPS_PROVIDER,1, 1, locationListener);
+            }catch(Exception e)
+
+            {this.finish();}
+
         }
         refreshLectures(false);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -203,7 +212,7 @@ public class prof_lectures extends AppCompatActivity implements GoogleApiClient.
     {
         if(!result.equals("done:0") && !result.equals("failure"))
         {
-            Toast.makeText(getApplicationContext(),result,Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(),result,Toast.LENGTH_SHORT).show();
             refreshLectures(true);
         }
         else if(result.equals("done:0"))
@@ -259,21 +268,14 @@ public class prof_lectures extends AppCompatActivity implements GoogleApiClient.
     }
 
     public void onConnected(@Nullable Bundle bundle) {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+        /*if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
 
         if(location != null) {
             //Toast.makeText(this, location.getLatitude() + ",  " + location.getLongitude(), Toast.LENGTH_SHORT).show();
-            loc="" + location.getAltitude() + "//" + location.getLongitude();
+            loc="" + location.getLatitude() + "//" + location.getLongitude();
         }
 
         LocationRequest locationRequest = LocationRequest.create();
@@ -281,24 +283,17 @@ public class prof_lectures extends AppCompatActivity implements GoogleApiClient.
         locationRequest.setInterval(3000);
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
         LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, new com.google.android.gms.location.LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
                 if(location != null) {
-                    //Toast.makeText(m, location.getLatitude() + ",  " + location.getLongitude(), Toast.LENGTH_SHORT).show();
-                    loc = "" + location.getAltitude() + "//" + location.getLongitude();
+                    Toast.makeText(m, location.getLatitude() + ",  " + location.getLongitude(), Toast.LENGTH_SHORT).show();
+                    loc =location.getLatitude() + "//" + location.getLongitude();
                 }
             }
-        });
+        });*/
     }
 
 

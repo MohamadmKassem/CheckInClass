@@ -53,6 +53,7 @@ class changePresenceThread extends AsyncTask<String, Void, String> {
         }
         catch (Exception e)
         {
+
             //error=e.getMessage();
             try {if(s!=null)s.close();}
             catch (IOException e1) {}

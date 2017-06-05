@@ -75,6 +75,14 @@ public class SpeceficStudentClass extends AppCompatActivity implements GoogleApi
             int i=reqpermission();
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
                 this.finish();
+            try{
+                locationListener=new MyLocationListener2(this);
+                manager.requestLocationUpdates(
+                        LocationManager.GPS_PROVIDER,1, 1, locationListener);
+            }
+            catch (Exception e)
+            {this.finish();}
+
         }
         m=this;
         db=new DatabaseHandler(this);
@@ -99,7 +107,7 @@ public class SpeceficStudentClass extends AppCompatActivity implements GoogleApi
         super.onStop();
     }
     public void onConnected(@Nullable Bundle bundle) {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        /*if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -133,9 +141,9 @@ public class SpeceficStudentClass extends AppCompatActivity implements GoogleApi
             @Override
             public void onLocationChanged(Location location) {
                 if(location != null)
-                    loc="" + location.getAltitude() + "//" + location.getLongitude();
+                    loc="" + location.getLatitude() + "//" + location.getLongitude();
             }
-        });
+        });*/
     }
 
     public void refreshStudentTab() {
